@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="fil">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="DALUM-AWIT: Ang Paglalakbay ni Mutya sa Bukid ng mga Kuwento — isang interactive na station-based na aralin sa Filipino 10.">
+  <meta name="theme-color" content="#1f4d3a">
+  <title>DALUM-AWIT · Ang Paglalakbay ni Mutya</title>
+  <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Lumaktaw sa nilalaman</a>
+
+  <svg class="svg-sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+    <symbol id="i-rice" viewBox="0 0 24 24">
+      <path d="M12 22V8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      <path d="M12 14.5C8.8 14.5 6.5 12.2 6.5 9c3.2 0 5.5 2.3 5.5 5.5Z" fill="currentColor"/>
+      <path d="M12 9.5C15.2 9.5 17.5 7.2 17.5 4c-3.2 0-5.5 2.3-5.5 5.5Z" fill="currentColor"/>
+      <path d="M12 18.5c-2.9 0-5.2-2.3-5.2-5.2 2.9 0 5.2 2.3 5.2 5.2Z" fill="currentColor" opacity=".72"/>
+      <path d="M12 6.2c2.9 0 5.2-2.3 5.2-5.2-2.9 0-5.2 2.3-5.2 5.2Z" fill="currentColor" opacity=".72"/>
+    </symbol>
+    <symbol id="i-arrow-right" viewBox="0 0 24 24">
+      <path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-arrow-left" viewBox="0 0 24 24">
+      <path d="M19 12H5M11 18l-6-6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-arrow-down" viewBox="0 0 24 24">
+      <path d="M12 5v14M6 13l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-check" viewBox="0 0 24 24">
+      <path d="M20 6 9 17l-5-5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24">
+      <rect x="5" y="10" width="14" height="10" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 10V7a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-reset" viewBox="0 0 24 24">
+      <path d="M3.5 12a8.5 8.5 0 1 0 2.5-6L3.5 8.5M3.5 3.5v5h5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-help" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M9.7 9a2.4 2.4 0 0 1 4.7.7c0 1.6-2.4 1.9-2.4 3.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      <circle cx="12" cy="16.8" r="1.1" fill="currentColor"/>
+    </symbol>
+    <symbol id="i-close" viewBox="0 0 24 24">
+      <path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-target" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.7"/>
+      <circle cx="12" cy="12" r="5" fill="none" stroke="currentColor" stroke-width="1.7"/>
+      <circle cx="12" cy="12" r="1.3" fill="currentColor"/>
+    </symbol>
+    <symbol id="i-printer" viewBox="0 0 24 24">
+      <path d="M7 9V4h10v5M7 17H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      <rect x="7" y="14" width="10" height="7" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M17 12h.01" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-seed" viewBox="0 0 24 24">
+      <path d="M12 21v-8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      <path d="M12 13C8 13 5 10 5 6c4 0 7 3 7 7Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+      <path d="M12 10c0-3.3 2.7-6 6-6 0 3.3-2.7 6-6 6Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-sweat" viewBox="0 0 24 24">
+      <path d="M12 3.5s6 6.1 6 10.2a6 6 0 0 1-12 0C6 9.6 12 3.5 12 3.5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+      <path d="M9.5 14a2.5 2.5 0 0 0 2.5 2.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-harvest" viewBox="0 0 24 24">
+      <path d="M12 21V8M12 13c-3 0-5.5-2.5-5.5-5.5C9.5 7.5 12 10 12 13ZM12 9.5C15 9.5 17.5 7 17.5 4 14.5 4 12 6.5 12 9.5Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M7.5 17.5c1.4 1 2.9 1.5 4.5 1.5s3.1-.5 4.5-1.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-plate" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.7"/>
+      <circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M12 4v2M12 18v2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-tools" viewBox="0 0 24 24">
+      <path d="M14.5 6.5a4 4 0 0 0-5.2 5.2L4 17l3 3 5.3-5.3a4 4 0 0 0 5.2-5.2l-2.4 2.4-3-3 2.4-2.4Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+      <path d="M15 15l5 5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-weather" viewBox="0 0 24 24">
+      <path d="M7 18h9.5a3.5 3.5 0 0 0 .4-7A5 5 0 0 0 7.2 12 3 3 0 0 0 7 18Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M17.5 5v2M21 8.5h-2M20 4l-1.4 1.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-peso" viewBox="0 0 24 24">
+      <path d="M7 4h6.2a5 5 0 0 1 0 10H7M7 4v16M4.5 8.5h11M4.5 12h10" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24">
+      <path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16v4Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+      <path d="M13.5 6.5l4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24">
+      <path d="M12 3c.6 4.8 3.2 7.4 8 8-4.8.6-7.4 3.2-8 8-.6-4.8-3.2-7.4-8-8 4.8-.6 7.4-3.2 8-8Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24">
+      <path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-book" viewBox="0 0 24 24">
+      <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H11v17H6.5A2.5 2.5 0 0 0 4 22V5.5ZM20 5.5A2.5 2.5 0 0 0 17.5 3H13v17h4.5A2.5 2.5 0 0 1 20 22V5.5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-leaf" viewBox="0 0 24 24">
+      <path d="M4 20c0-8 5-14 16-15 1 11-5 16-13 16H4Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+      <path d="M4 20c3-6 7-9 12-11" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+    </symbol>
+  </svg>
+
+  <div class="paper-noise" aria-hidden="true"></div>
+
+  <header class="site-header" id="top">
+    <div class="header-inner">
+      <a class="brand" href="#" id="brandHome" aria-label="DALUM-AWIT — Ang Paglalakbay ni Mutya: Sa Bukid ng mga Kuwento. Bumalik sa simula.">
+        <span class="brand-mark" aria-hidden="true">
+          <svg class="icon"><use href="#i-rice"></use></svg>
+        </span>
+        <span class="brand-text">
+          <span class="brand-title">DALUM-AWIT</span>
+          <span class="brand-subtitle">Ang Paglalakbay ni Mutya: Sa Bukid ng mga Kuwento</span>
+        </span>
+      </a>
+      <div class="header-actions">
+        <span class="grade-chip">Filipino 10</span>
+        <button class="icon-button" id="helpBtn" type="button" aria-label="Tulong at gabay" title="Tulong at gabay">
+          <svg class="icon" aria-hidden="true"><use href="#i-help"></use></svg>
+        </button>
+        <button class="icon-button" id="resetBtn" type="button" aria-label="Simulan muli" title="Simulan muli">
+          <svg class="icon" aria-hidden="true"><use href="#i-reset"></use></svg>
+        </button>
+      </div>
+    </div>
+
+    <nav class="stepper-wrap" aria-label="Mga istasyon ng paglalakbay">
+      <div class="stepper">
+        <span class="stepper-line" aria-hidden="true"></span>
+        <span class="stepper-fill" id="stepperFill" aria-hidden="true"></span>
+        <ol class="stepper-list" id="stepper"></ol>
+      </div>
+      <p class="stepper-caption" id="stepperCaption" aria-live="polite">Station 1 ng 5 · Sa Gitna ng Palayan</p>
+    </nav>
+  </header>
+
+  <main class="app-main" id="main-content" tabindex="-1">
+    <div class="station-shell" id="stationShell">
+
+      <section class="station-view" id="station-1" data-station="1" aria-labelledby="station-1-title" hidden>
+        <header class="station-heading" data-station-header></header>
+        <div class="dialogue-mount" id="stage-1"></div>
+
+        <div class="station-activity" id="station1Activity" hidden>
+          <article class="activity-card quiz-card">
+            <div class="card-kicker">
+              <svg class="icon" aria-hidden="true"><use href="#i-spark"></use></svg>
+              <span>Tsek ng Pag-unawa</span>
+            </div>
+            <h2 id="quizQuestion">Ano ang pangunahing katangian ng maluway?</h2>
+            <div class="quiz-options" id="quizOptions" role="group" aria-labelledby="quizQuestion"></div>
+            <div class="quiz-feedback" id="quizFeedback" role="status" hidden></div>
+          </article>
+
+          <div class="station-nav">
+            <button class="btn btn-ghost" type="button" id="station1Review">
+              <svg class="icon" aria-hidden="true"><use href="#i-book"></use></svg>
+              Balikan ang usapan
+            </button>
+            <p class="nav-hint" id="station1Hint">Sagutin ang tsek upang magpatuloy.</p>
+            <button class="btn btn-primary" type="button" id="station1Next" disabled>
+              Magpatuloy sa Station 2
+              <svg class="icon" aria-hidden="true"><use href="#i-arrow-right"></use></svg>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section class="station-view" id="station-2" data-station="2" aria-labelledby="station-2-title" hidden>
+        <header class="station-heading" data-station-header></header>
+
+        <div class="lesson-banner">
+          <div class="lesson-banner-label">
+            <svg class="icon" aria-hidden="true"><use href="#i-book"></use></svg>
+            <span>Mula sa awit</span>
+          </div>
+          <blockquote id="station2Quote">“Magtanim ay 'di biro.”</blockquote>
+          <p id="station2Intro"></p>
+        </div>
+
+        <div class="lyric-toolbar">
+          <div class="progress-chip">
+            <span class="progress-chip-dot" aria-hidden="true"></span>
+            <span id="lyricProgressText">0 / 5 nabuksan</span>
+          </div>
+          <button class="btn btn-small btn-ghost" type="button" id="openAllLyrics">Buksan lahat</button>
+        </div>
+
+        <div class="lyric-list" id="lyricCards"></div>
+
+        <div class="insight-card" id="station2Closing" hidden>
+          <div class="insight-icon" aria-hidden="true">
+            <svg class="icon"><use href="#i-leaf"></use></svg>
+          </div>
+          <p id="station2ClosingText"></p>
+        </div>
+
+        <div class="station-nav">
+          <button class="btn btn-ghost" type="button" data-back="2">
+            <svg class="icon" aria-hidden="true"><use href="#i-arrow-left"></use></svg>
+            Station 1
+          </button>
+          <p class="nav-hint" id="station2Hint">Buksan ang lahat ng card upang magpatuloy.</p>
+          <button class="btn btn-primary" type="button" id="station2Next" disabled>
+            Magpatuloy sa Station 3
+            <svg class="icon" aria-hidden="true"><use href="#i-arrow-right"></use></svg>
+          </button>
+        </div>
+      </section>
+
+      <section class="station-view" id="station-3" data-station="3" aria-labelledby="station-3-title" hidden>
+        <header class="station-heading" data-station-header></header>
+        <div class="dialogue-mount" id="stage-3"></div>
+
+        <div class="station-activity" id="station3Activity" hidden>
+          <article class="activity-card flow-card">
+            <div class="card-kicker">
+              <svg class="icon" aria-hidden="true"><use href="#i-spark"></use></svg>
+              <span>Interactive na Daloy</span>
+            </div>
+            <h2>Ang Paikot na Daloy ng Pagkain</h2>
+            <p class="activity-lede">Pindutin ang bawat yugto upang makita ang kaugnayan nito sa awit at sa buhay ng magsasaka.</p>
+
+            <div class="food-flow" id="foodFlow" aria-label="Daloy ng pagkain"></div>
+            <div class="flow-detail" id="flowDetail" aria-live="polite"></div>
+            <p class="flow-note" id="flowNote"></p>
+          </article>
+
+          <div class="station-nav">
+            <button class="btn btn-ghost" type="button" data-back="3">
+              <svg class="icon" aria-hidden="true"><use href="#i-arrow-left"></use></svg>
+              Station 2
+            </button>
+            <p class="nav-hint">Nakita mo na ang buong daloy ng pagkain.</p>
+            <button class="btn btn-primary" type="button" id="station3Next">
+              Magpatuloy sa Station 4
+              <svg class="icon" aria-hidden="true"><use href="#i-arrow-right"></use></svg>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section class="station-view" id="station-4" data-station="4" aria-labelledby="station-4-title" hidden>
+        <header class="station-heading" data-station-header></header>
+        <div class="dialogue-mount" id="stage-4"></div>
+
+        <div class="station-activity" id="station4Activity" hidden>
+          <article class="activity-card issue-card-wrap">
+            <div class="card-kicker">
+              <svg class="icon" aria-hidden="true"><use href="#i-spark"></use></svg>
+              <span>Pagpili ng Isyu</span>
+            </div>
+            <h2>Anong isyung panlipunan ang nais mong suriin?</h2>
+            <p class="activity-lede">Pumili ng isang isyu. Pagkatapos, sagutin ang tanong at ipaliwanag ang iyong pananaw gamit ang iyong natutuhan.</p>
+            <div class="issue-grid" id="issueGrid" role="group" aria-label="Mga isyung panlipunan"></div>
+          </article>
+
+          <div class="issue-workspace" id="issueWorkspace" hidden>
+            <div class="workspace-head">
+              <span class="workspace-letter" id="workspaceLetter">A</span>
+              <div class="workspace-title-wrap">
+                <p class="workspace-tag" id="workspaceTag"></p>
+                <h2 id="workspaceTitle"></h2>
+              </div>
+            </div>
+            <p class="workspace-detail" id="workspaceDetail"></p>
+            <ul class="point-list" id="workspacePoints"></ul>
+
+            <div class="decision-card">
+              <p class="decision-kicker">
+                <svg class="icon" aria-hidden="true"><use href="#i-help"></use></svg>
+                Tanong para sa iyo
+              </p>
+              <h3 id="issueQuestion"></h3>
+              <div class="decision-row" id="decisionRow" role="group" aria-label="Pumili ng sagot: Oo o Hindi">
+                <button class="decision-button decision-yes" type="button" data-decision="oo" aria-pressed="false">
+                  <span class="decision-mark" aria-hidden="true">
+                    <svg class="icon"><use href="#i-check"></use></svg>
+                  </span>
+                  <span><strong>OO</strong><small>Sumasang-ayon ako</small></span>
+                </button>
+                <button class="decision-button decision-no" type="button" data-decision="hindi" aria-pressed="false">
+                  <span class="decision-mark" aria-hidden="true">
+                    <svg class="icon"><use href="#i-close"></use></svg>
+                  </span>
+                  <span><strong>HINDI</strong><small>Hindi ako sumasang-ayon</small></span>
+                </button>
+              </div>
+
+              <label class="reflection-label" for="reflectionInput" id="reflectionLabel">Ipaliwanag ang iyong sagot</label>
+              <p class="reflection-prompt" id="reflectionPrompt"></p>
+              <textarea id="reflectionInput" rows="6" maxlength="1200" placeholder="Isulat dito ang iyong paliwanag..."></textarea>
+              <div class="textarea-meta">
+                <span class="textarea-status" id="reflectionStatus">Isulat ang iyong paliwanag.</span>
+                <span class="char-count" id="charCount">0 / 40</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="station-nav">
+            <button class="btn btn-ghost" type="button" data-back="4">
+              <svg class="icon" aria-hidden="true"><use href="#i-arrow-left"></use></svg>
+              Station 3
+            </button>
+            <p class="nav-hint" id="station4Hint">Pumili ng isyu, sagutin ang tanong, at magbigay ng paliwanag.</p>
+            <button class="btn btn-primary" type="button" id="station4Next" disabled>
+              Magpatuloy sa Station 5
+              <svg class="icon" aria-hidden="true"><use href="#i-arrow-right"></use></svg>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section class="station-view" id="station-5" data-station="5" aria-labelledby="station-5-title" hidden>
+        <header class="station-heading" data-station-header></header>
+
+        <div class="quote-banner" id="station5Banner">
+          <div class="quote-banner-copy">
+            <svg class="quote-mark" aria-hidden="true" viewBox="0 0 48 48"><path d="M10 34c-3 0-5-2-5-5 0-8 5-15 12-19l3 4c-5 3-8 7-9 11 2 0 7 1 7 6 0 2-2 3-5 3h-3Zm22 0c-3 0-5-2-5-5 0-8 5-15 12-19l3 4c-5 3-8 7-9 11 2 0 7 1 7 6 0 2-2 3-5 3h-3Z" fill="currentColor"/></svg>
+            <blockquote id="station5Quote"></blockquote>
+            <p class="quote-attribution" id="station5Attribution"></p>
+          </div>
+          <div class="quote-banner-figure" id="station5Figure" aria-hidden="true"></div>
+        </div>
+
+        <p class="section-intro station5-opening" id="station5Opening"></p>
+
+        <section class="synthesis-section" aria-labelledby="synthesisTitle">
+          <div class="section-heading-row">
+            <div>
+              <p class="section-kicker">Buod ng Paglalakbay</p>
+              <h2 id="synthesisTitle">Sintesis ng Paglalakbay</h2>
+            </div>
+            <p>Paano nagkakaugnay ang awit, gawain, karanasan, at isyung panlipunan? Pindutin ang bawat yugto.</p>
+          </div>
+          <div class="synthesis" id="synthesisDiagram"></div>
+        </section>
+
+        <section class="report-section" aria-labelledby="reportTitle">
+          <div class="section-heading-row">
+            <div>
+              <p class="section-kicker">Para sa Iyong Guro</p>
+              <h2 id="reportTitle">Ulat ng Mag-aaral</h2>
+            </div>
+            <p>Ito ang iyong ulat. Maaari mo itong i-print o i-save bilang PDF para sa iyong guro.</p>
+          </div>
+
+          <article class="summary-card">
+            <header class="summary-head">
+              <div>
+                <p class="summary-kicker">DALUM-AWIT · Filipino 10</p>
+                <h2>Ulat ng Mag-aaral</h2>
+                <p>Ang Paglalakbay ni Mutya: Sa Bukid ng mga Kuwento</p>
+              </div>
+              <button class="btn btn-gold" type="button" id="printReportBtn">
+                <svg class="icon" aria-hidden="true"><use href="#i-printer"></use></svg>
+                I-print / I-save
+              </button>
+            </header>
+
+            <div class="summary-body">
+              <div class="summary-fields">
+                <label class="field">
+                  <span>Pangalan</span>
+                  <input id="studentName" type="text" maxlength="80" autocomplete="name" placeholder="Isulat ang iyong pangalan">
+                </label>
+                <label class="field">
+                  <span>Baitang at Seksyon</span>
+                  <input id="studentSection" type="text" maxlength="60" placeholder="Hal. 10 - Rizal">
+                </label>
+                <div class="summary-date">
+                  <span>Petsa</span>
+                  <strong id="summaryDate"></strong>
+                </div>
+              </div>
+
+              <div class="summary-answer">
+                <div class="summary-answer-head">
+                  <div>
+                    <p class="summary-label">Napiling isyung panlipunan</p>
+                    <h3 id="summaryIssue">Wala pang napiling isyu</h3>
+                  </div>
+                  <button class="btn btn-small btn-ghost" type="button" id="summaryEditBtn">
+                    <svg class="icon" aria-hidden="true"><use href="#i-edit"></use></svg>
+                    I-edit ang sagot
+                  </button>
+                </div>
+                <p class="summary-question" id="summaryQuestion"></p>
+                <div class="summary-decision-line">
+                  <span class="summary-label">Aking sagot</span>
+                  <span class="answer-badge is-empty" id="summaryDecision">—</span>
+                </div>
+                <p class="summary-label">Aking paliwanag</p>
+                <p class="summary-reflection" id="summaryReflection">Wala pang naisulat na paliwanag.</p>
+              </div>
+
+              <div class="summary-insight">
+                <label class="field-label" for="finalInsight" id="finalInsightLabel">Ang pinakamahalagang natutuhan ko</label>
+                <p class="reflection-prompt" id="finalInsightPrompt"></p>
+                <textarea id="finalInsight" rows="5" maxlength="1200" placeholder="Isulat ang iyong sintesis..."></textarea>
+              </div>
+
+              <div class="summary-synthesis">
+                <p class="summary-label">Sintesis</p>
+                <div class="synthesis-chips" aria-label="AWIT papunta sa GAWAIN papunta sa KARANASAN NG MAGSASAKA papunta sa MGA ISYUNG PANLIPUNAN">
+                  <span>AWIT</span>
+                  <svg class="icon" aria-hidden="true"><use href="#i-arrow-right"></use></svg>
+                  <span>GAWAIN</span>
+                  <svg class="icon" aria-hidden="true"><use href="#i-arrow-right"></use></svg>
+                  <span>KARANASAN NG MAGSASAKA</span>
+                  <svg class="icon" aria-hidden="true"><use href="#i-arrow-right"></use></svg>
+                  <span>MGA ISYUNG PANLIPUNAN</span>
+                </div>
+              </div>
+
+              <div class="summary-actions">
+                <button class="btn btn-primary" type="button" id="printReportBtn2">
+                  <svg class="icon" aria-hidden="true"><use href="#i-printer"></use></svg>
+                  I-print / I-save bilang PDF
+                </button>
+                <button class="btn btn-ghost" type="button" id="restartBtn2">
+                  <svg class="icon" aria-hidden="true"><use href="#i-reset"></use></svg>
+                  Bagong mag-aaral
+                </button>
+              </div>
+            </div>
+          </article>
+        </section>
+      </section>
+
+      <div class="load-error" id="loadError" hidden>
+        <h1>Hindi ma-load ang kuwento</h1>
+        <p>Mangyaring buksan ang app gamit ang isang lokal na web server o i-refresh ang pahina.</p>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p><strong>DALUM-AWIT</strong> · Isang interbensyong pampagtuturo sa Filipino 10</p>
+      <p>Batay sa awiting-bayang “Magtanim ay 'Di Biro.”</p>
+    </div>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <dialog class="app-dialog" id="helpDialog" aria-labelledby="helpTitle">
+    <div class="dialog-inner">
+      <button class="dialog-close" type="button" data-close-dialog aria-label="Isara ang gabay">
+        <svg class="icon" aria-hidden="true"><use href="#i-close"></use></svg>
+      </button>
+      <p class="dialog-kicker">Gabay sa Paggamit</p>
+      <h2 id="helpTitle">Paano maglakbay kasama si Mutya</h2>
+      <ol class="help-list">
+        <li><strong>Sunod-sunod ang mga istasyon.</strong> Tapusin ang bawat gawain upang mabuksan ang susunod.</li>
+        <li><strong>Buksan ang bawat card sa Station 2.</strong> Pindutin ang mga linyang mula sa awit upang makita ang pagsusuri.</li>
+        <li><strong>Pumili at magpaliwanag sa Station 4.</strong> Kailangan ang isyung pinili, sagot na OO o HINDI, at paliwanag na may 40 karakter o higit pa.</li>
+        <li><strong>I-print ang ulat sa Station 5.</strong> Maaari mong i-save bilang PDF sa print dialog ng browser.</li>
+      </ol>
+      <div class="dialog-note">
+        <strong>Paalala sa guro:</strong> Kusang nai-save ang progreso sa browser na ito. Gamitin ang reset button sa itaas upang magsimula ng bagong mag-aaral.
+      </div>
+      <p class="dialog-shortcut">Maaari ding gamitin ang <kbd>←</kbd> at <kbd>→</kbd> habang nag-uusap ang mga tauhan.</p>
+      <button class="btn btn-primary" type="button" data-close-dialog>Simulan na</button>
+    </div>
+  </dialog>
+
+  <dialog class="app-dialog" id="resetDialog" aria-labelledby="resetTitle">
+    <div class="dialog-inner">
+      <button class="dialog-close" type="button" data-close-dialog aria-label="Isara">
+        <svg class="icon" aria-hidden="true"><use href="#i-close"></use></svg>
+      </button>
+      <p class="dialog-kicker">Bagong Simula</p>
+      <h2 id="resetTitle">Simulan muli ang paglalakbay?</h2>
+      <p class="dialog-copy">Buburahin ang lahat ng naitalang sagot at progreso sa browser na ito. Hindi na ito maibabalik.</p>
+      <div class="dialog-actions">
+        <button class="btn btn-ghost" type="button" data-close-dialog>Kanselahin</button>
+        <button class="btn btn-danger" type="button" id="confirmReset">Oo, simulan muli</button>
+      </div>
+    </div>
+  </dialog>
+
+  <section class="print-report" id="printReport" aria-hidden="true"></section>
+
+  <script src="data/storyData.js"></script>
+  <script src="assets/js/state.js"></script>
+  <script src="assets/js/dialogue.js"></script>
+  <script src="assets/js/station1.js"></script>
+  <script src="assets/js/station2.js"></script>
+  <script src="assets/js/station3.js"></script>
+  <script src="assets/js/station4.js"></script>
+  <script src="assets/js/station5.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>

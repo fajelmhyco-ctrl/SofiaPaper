@@ -1,0 +1,216 @@
+# DALUM-AWIT
+
+**Ang Paglalakbay ni Mutya: Sa Bukid ng mga Kuwento**
+
+Isang station-based, interactive na aralin sa Filipino 10 tungkol sa awiting-bayang “Magtanim ay 'Di Biro,” karanasan ng mga magsasaka, at mga kontemporaryong isyung panlipunan.
+
+Ang app ay isang static na website — walang build step at walang backend. Gumagana ito sa browser at kusang nagse-save ng progreso sa `localStorage`.
+
+---
+
+## Mabilis na Simula
+
+### Opsyon A — Buksan nang direkta
+
+I-double-click lamang ang `index.html`.
+
+Gagamitin ng app ang `data/storyData.js` (offline mirror ng JSON) kapag `file://` ang protocol.
+
+### Opsyon B — Lokal na web server (inirerekomenda)
+
+Mula sa project folder:
+
+```powershell
+python -m http.server 8765
+```
+
+Pagkatapos, buksan ang:
+
+```
+http://127.0.0.1:8765
+```
+
+Sa mode na ito, binabasa ang canonical na `data/storyData.json`.
+
+### Kinakailangan
+
+- Isang modernong browser (Chrome, Edge, Firefox, Safari).
+- Hindi kailangan ng internet. Kung walang access sa Google Fonts, gagamit ang app ng local fallback fonts.
+- Node.js ay kailangan lamang kung i-e-edit ang nilalaman at i-regenerate ang offline data mirror.
+
+---
+
+## Ang Limang Istasyon
+
+| Station | Pamagat | Pangunahing Gawain |
+|---|---|---|
+| 1 | Sa Gitna ng Palayan | Usapan nina Mutya at Mang Isko tungkol sa **maluway** at sama-samang paggawa, kasunod ang tsek ng pag-unawa. |
+| 2 | Ang Awit ng mga Magsasaka | Interactive na pagsusuri ng limang linya ng awit at ang kahulugan nito sa tunay na buhay ng magsasaka. |
+| 3 | Kung Ano ang Nasa Likod ng Awit | Usapan sa bukid at interactive na daloy: **PAGTATANIM → PAGHIHIRAP → PAG-AANI → PAGKAIN**. |
+| 4 | Pag-uwi ni Mutya | Pagpili sa isa sa tatlong isyung panlipunan, sagot na **OO / HINDI**, at paliwanag na may minimum na 40 karakter. |
+| 5 | Ang Natutuhan ni Mutya | Vertical synthesis diagram, summary card ng mag-aaral, at printable na ulat para sa guro. |
+
+Sunod-sunod na nagbubukas ang mga istasyon. Ang bawat isa ay may sariling completion condition:
+
+- **Station 1:** matapos ang usapan at tamang sagot sa tsek.
+- **Station 2:** mabuksan ang lahat ng limang pagsusuri.
+- **Station 3:** matapos ang usapan.
+- **Station 4:** may napiling isyu, may OO/HINDI na sagot, at may paliwanag na 40+ karakter.
+- **Station 5:** walang susunod na istasyon; dito ang print/save ng report.
+
+Maaaring balikan ang mga nakaraang istasyon gamit ang stepper sa itaas.
+
+---
+
+## Estruktura ng Project
+
+```
+Sofia's Thesis/
+├─ index.html                  ← app shell, header, stepper, station containers
+├─ README.md
+├─ assets/
+│  ├─ css/
+│  │  └─ main.css             ← design system, responsive layout, print styles
+│  ├─ images/
+│  │  ├─ favicon.svg
+│  │  ├─ Mutya (Nakatayo).png
+│  │  ├─ Mutya (Nagsasalita).png
+│  │  ├─ Mutya (Naglalakad).png
+│  │  ├─ Mang Isko (Nakatayo_Nakikinig).png
+│  │  ├─ Mang Isko (Nagsasalita).png
+│  │  ├─ Mang Isko (Naglalakad).png
+│  │  ├─ Mang Isko (Nagtatanim).png
+│  │  └─ Mag asawa.png
+│  └─ js/
+│     ├─ state.js             ← state manager + LocalStorage + shared utilities
+│     ├─ dialogue.js          ← visual-novel dialogue engine
+│     ├─ station1.js          ← comprehension check
+│     ├─ station2.js          ← lyric analysis accordion
+│     ├─ station3.js          ← food-security flowchart
+│     ├─ station4.js          ← issue selection, OO/HINDI, reflection
+│     ├─ station5.js          ← synthesis, summary, printable report
+│     └─ app.js               ← router, stepper, dialogs, data loading
+├─ data/
+│  ├─ storyData.json          ← canonical content source
+│  └─ storyData.js            ← auto-generated offline mirror
+└─ tools/
+   └─ embed-data.mjs          ← regenerates data/storyData.js
+```
+
+---
+
+## Pag-edit ng Nilalaman
+
+Lahat ng teksto, tauhan, usapan, pagsusuri, isyu, at synthesis ay nasa:
+
+```
+data/storyData.json
+```
+
+Pagkatapos i-edit ang JSON, i-regenerate ang offline mirror:
+
+```powershell
+node tools/embed-data.mjs
+```
+
+Mahalagang gawin ito upang pareho ang laman ng `storyData.json` at `storyData.js`. Kapag naka-local server, JSON ang binabasa; kapag direktang binuksan ang `index.html`, JS mirror ang ginagamit.
+
+### Mga pangunahing bahagi ng JSON
+
+| Key | Nilalaman |
+|---|---|
+| `meta` | Pamagat, baitang, asignatura, awit. |
+| `characters` | Pangalan, role, side, at sprite files ng mga tauhan. |
+| `stations` | Limang station entry: title, lede, objective, scene, dialogue, quiz/lesson. |
+| `flowchart` | Apat na yugto ng food-security cycle. |
+| `issues` | Tatlong isyung panlipunan, tanong, at prompt. |
+| `synthesis` | Apat na node ng final diagram. |
+| `summary` | Pamagat at intro ng student report. |
+
+Ang bawat dialogue line ay may:
+
+```json
+{
+  "speaker": "mutya",
+  "text": "Magandang araw po!",
+  "scene": "field-morning",
+  "mutya": "nagsasalita",
+  "isko": "nagtatanim"
+}
+```
+
+- `speaker`: `mutya`, `isko`, `nanay`, `tatay`, o `narrator`.
+- `scene`: `field-morning`, `field-afternoon`, `home`, o `dawn`.
+- `mutya` / `isko`: sprite state key.
+- `parents`: `true` kung lalabas ang `Mag asawa.png` sa Station 4.
+
+---
+
+## Pag-save at Pag-print ng Ulat
+
+1. Tapusin ang Station 4.
+2. Pumunta sa Station 5.
+3. Isulat ang pangalan, baitang/seksyon, at “Ang pinakamahalagang natutuhan ko.”
+4. Pindutin ang **I-print / I-save**.
+
+Sa print dialog ng browser, piliin ang **Save as PDF** upang makakuha ng A4 na ulat. Karaniwang dalawang pahina ang output at may kasamang:
+
+- Pangalan, baitang/seksyon, petsa, at guro
+- Napiling isyung panlipunan at ang tanong
+- Sagot na OO/HINDI at ang paliwanag ng mag-aaral
+- Ang natutuhan ng mag-aaral
+- Sintesis na `AWIT → GAWAIN → KARANASAN NG MAGSASAKA → MGA ISYUNG PANLIPUNAN`
+- Mga layunin ng bawat istasyon
+- Deklarasyon at lagda ng mag-aaral at guro
+- Footer ng DALUM-AWIT
+
+Maaari ring gamitin ang `Ctrl + P` / `Cmd + P`; awtomatikong binubuo ng app ang print-only na ulat bago mag-print.
+
+---
+
+## Progreso at Privacy
+
+- Naka-save ang progreso sa browser sa ilalim ng key na `dalumAwit.state.v1`.
+- Hindi kailangan ng account at walang data na ipinapadala sa server.
+- Ang mga sagot ay nananatili lamang sa device/browser na ginamit.
+- Ang **reset button** sa header ay nagbubura ng lahat ng sagot at progreso. Mag-reload ang pahina at babalik sa Station 1.
+- Kung gagamit ng shared classroom computer, pindutin ang reset bago magsimula ang susunod na mag-aaral.
+
+---
+
+## Accessibility at Responsiveness
+
+- Naka-test sa lapad na **1440, 1180, 1024, 900, 834, 768, 700, 600, 430, 390, 360, at 320 px**.
+- Walang horizontal overflow sa lahat ng nasubukang lapad.
+- Gumagana ang keyboard navigation: `←` at `→` para sa dialogue; `Tab` at `Enter` para sa mga kontrol.
+- May visible focus styles at `prefers-reduced-motion` support.
+- Ang mobile view ay gumagamit ng stacked layout, mas maliit na sprites, at full-width buttons.
+- Ang station stepper ay nagpapakita ng numero sa mobile at may caption para sa aktibong istasyon.
+
+---
+
+## Troubleshooting
+
+**Hindi lumalabas ang mga larawan o walang nangyayari kapag binuksan ang file**
+- Siguraduhing buo ang `assets/images/` folder at walang na-rename na PNG.
+- Subukang buksan gamit ang lokal na server (Opsyon B).
+
+**Luma ang teksto pagkatapos i-edit ang JSON**
+- Patakbuhin muli ang `node tools/embed-data.mjs`.
+
+**Nawala ang progreso**
+- Naka-clear ang browser storage, gumamit ng private/incognito window, o ibang browser ang ginamit. Bahagi ito ng inaasahang behavior ng LocalStorage.
+
+**Hindi lumalabas nang maayos ang print**
+- Sa print dialog, i-enable ang **Background graphics** kung nais makita ang light green/gold accents.
+- Piliin ang A4 at default margins.
+
+---
+
+## Mga Pinagmulan ng Nilalaman
+
+- `BANGHAY NG KUWENTO.docx` — narrative outline, station objectives, at Filipino dialogue.
+- `DALUM-AWIT_TESIS.docx` — Kabanata II, metodolohiya, at framing ng pag-aaral.
+- `drive-download-20261021T130856Z-1-001.zip` — walong transparent na character PNG, inilagay sa `assets/images/`.
+
+Ang awit na “Magtanim ay 'Di Biro” ay isang tradisyunal na awiting-bayang Pilipino. Ang app ay ginawa bilang interbensyong pampagtuturo para sa Baitang 10 Filipino.

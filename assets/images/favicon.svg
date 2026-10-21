@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="DALUM-AWIT">
+  <rect width="64" height="64" rx="14" fill="#173c2b"/>
+  <path d="M32 54V21" fill="none" stroke="#e8be6b" stroke-width="3.6" stroke-linecap="round"/>
+  <path d="M32 36c-7.6 0-13-5.4-13-13 7.6 0 13 5.4 13 13Z" fill="#d6a447"/>
+  <path d="M32 25c0-7.6 5.4-13 13-13 0 7.6-5.4 13-13 13Z" fill="#e8be6b"/>
+  <path d="M32 47c-6.2 0-10.6-4.4-10.6-10.6 6.2 0 10.6 4.4 10.6 10.6Z" fill="#b8842a"/>
+  <path d="M32 35c0-6.2 4.4-10.6 10.6-10.6 0 6.2-4.4 10.6-10.6 10.6Z" fill="#d6a447"/>
+</svg>
