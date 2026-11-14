@@ -71,13 +71,17 @@
 
     els.progressText.textContent = count + ' / ' + total + ' nabuksan';
 
-    const complete = count === total;
-    els.closing.hidden = !complete;
+    const lessonComplete = count === total;
+    const quizComplete = window.QuizManager.isStationComplete(2);
+    const complete = lessonComplete && quizComplete;
+    els.closing.hidden = !lessonComplete;
     els.next.disabled = !complete;
-    els.openAll.hidden = complete;
-    els.hint.textContent = complete
-      ? 'Kumpleto ang pagsusuri. Handa ka nang magpatuloy sa Station 3.'
-      : 'Buksan ang lahat ng card upang magpatuloy.';
+    els.openAll.hidden = lessonComplete;
+    els.hint.textContent = !lessonComplete
+      ? 'Buksan ang lahat ng card upang magpatuloy.'
+      : !quizComplete
+        ? 'Sagutan ang lahat ng tanong sa Station 2.'
+        : 'Kumpleto ang pagsusuri. Handa ka nang magpatuloy sa Station 3.';
   }
 
   function openCard(card, shouldToast) {
@@ -119,6 +123,7 @@
 
   function onShow() {
     applyOpenState();
+    window.QuizManager.paintStation(2);
     updateProgress();
   }
 
@@ -145,6 +150,10 @@
     els.next.addEventListener('click', function () {
       if (els.next.disabled) return;
       window.App.completeStation(2);
+    });
+
+    document.addEventListener('dalum:quiz-progress', function (event) {
+      if (event.detail && event.detail.stationId === 2) updateProgress();
     });
   }
 

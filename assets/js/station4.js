@@ -59,7 +59,9 @@
     const issue = currentIssue();
     const answer = issue ? window.AppState.getAnswer(issue.id) : { decision: null, reflection: '' };
     const length = reflectionLength(answer.reflection);
-    const complete = Boolean(issue && answer.decision && length >= MIN_REFLECTION);
+    const reflectionComplete = Boolean(issue && answer.decision && length >= MIN_REFLECTION);
+    const quizComplete = window.QuizManager.isStationComplete(4);
+    const complete = reflectionComplete && quizComplete;
 
     els.next.disabled = !complete;
 
@@ -69,8 +71,10 @@
       els.hint.textContent = 'Sagutin ang tanong gamit ang OO o HINDI.';
     } else if (length < MIN_REFLECTION) {
       els.hint.textContent = 'Kailangan pa ng ' + (MIN_REFLECTION - length) + ' karakter sa iyong paliwanag.';
+    } else if (!quizComplete) {
+      els.hint.textContent = 'Sagutan ang lahat ng tanong sa Station 4.';
     } else {
-      els.hint.textContent = 'Kumpleto na ang iyong sagot. Maaari nang magpatuloy sa Station 5.';
+      els.hint.textContent = 'Kumpleto na ang iyong mga sagot. Maaari nang magpatuloy sa Station 5.';
     }
 
     return complete;
@@ -192,6 +196,7 @@
     els.activity.hidden = !visible;
     if (visible) {
       syncSelection();
+      window.QuizManager.paintStation(4);
       const issue = currentIssue();
       if (issue) renderWorkspace(issue);
       else updateNext();
@@ -242,6 +247,10 @@
     const issue = currentIssue();
     if (issue) renderWorkspace(issue);
     updateNext();
+
+    document.addEventListener('dalum:quiz-progress', function (event) {
+      if (event.detail && event.detail.stationId === 4) updateNext();
+    });
   }
 
   window.Station4 = {

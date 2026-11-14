@@ -2,7 +2,7 @@
 
 **Ang Paglalakbay ni Mutya: Sa Bukid ng mga Kuwento**
 
-Isang station-based, interactive na aralin sa Filipino 10 tungkol sa awiting-bayang “Magtanim ay 'Di Biro,” karanasan ng mga magsasaka, at mga kontemporaryong isyung panlipunan.
+Isang station-based, interactive na aralin sa Filipino 7 tungkol sa awiting-bayang “Magtanim ay 'Di Biro,” karanasan ng mga magsasaka, at mga kontemporaryong isyung panlipunan.
 
 Ang app ay isang static na website — walang build step at walang backend. Gumagana ito sa browser at kusang nagse-save ng progreso sa `localStorage`.
 
@@ -44,19 +44,20 @@ Sa mode na ito, binabasa ang canonical na `data/storyData.json`.
 
 | Station | Pamagat | Pangunahing Gawain |
 |---|---|---|
-| 1 | Sa Gitna ng Palayan | Usapan nina Mutya at Mang Isko tungkol sa **maluway** at sama-samang paggawa, kasunod ang tsek ng pag-unawa. |
-| 2 | Ang Awit ng mga Magsasaka | Interactive na pagsusuri ng limang linya ng awit at ang kahulugan nito sa tunay na buhay ng magsasaka. |
-| 3 | Kung Ano ang Nasa Likod ng Awit | Usapan sa bukid at interactive na daloy: **PAGTATANIM → PAGHIHIRAP → PAG-AANI → PAGKAIN**. |
-| 4 | Pag-uwi ni Mutya | Pagpili sa isa sa tatlong isyung panlipunan, sagot na **OO / HINDI**, at paliwanag na may minimum na 40 karakter. |
-| 5 | Ang Natutuhan ni Mutya | Vertical synthesis diagram, summary card ng mag-aaral, at printable na ulat para sa guro. |
+| 1 | Sa Gitna ng Palayan | Usapan nina Mutya at Mang Isko, kasunod ang mga tanong 1–5. |
+| 2 | Ang Awit ng mga Magsasaka | Pagsusuri ng limang linya ng awit at mga tanong 6–10. |
+| 3 | Kung Ano ang Nasa Likod ng Awit | Interactive na daloy ng pagkain at mga tanong 11–15. |
+| 4 | Pag-uwi ni Mutya | Pagsusuri ng isyung panlipunan at mga tanong 16–20. |
+| 5 | Ang Natutuhan ni Mutya | Mga tanong 21–25, synthesis, at printable na ulat. |
 
 Sunod-sunod na nagbubukas ang mga istasyon. Ang bawat isa ay may sariling completion condition:
 
-- **Station 1:** matapos ang usapan at tamang sagot sa tsek.
-- **Station 2:** mabuksan ang lahat ng limang pagsusuri.
-- **Station 3:** matapos ang usapan.
-- **Station 4:** may napiling isyu, may OO/HINDI na sagot, at may paliwanag na 40+ karakter.
-- **Station 5:** walang susunod na istasyon; dito ang print/save ng report.
+- **Bago ang Station 1:** matapos ang lahat ng larawang kuwento.
+- **Station 1:** masagutan ang limang tanong.
+- **Station 2:** mabuksan ang limang pagsusuri at masagutan ang limang tanong.
+- **Station 3:** masagutan ang limang tanong.
+- **Station 4:** may napiling isyu, may OO/HINDI na sagot, may paliwanag na 40+ karakter, at nasagutan ang limang tanong.
+- **Station 5:** masagutan ang huling limang tanong; dito rin ang print/save ng report.
 
 Maaaring balikan ang mga nakaraang istasyon gamit ang stepper sa itaas.
 
@@ -67,10 +68,13 @@ Maaaring balikan ang mga nakaraang istasyon gamit ang stepper sa itaas.
 ```
 Sofia's Thesis/
 ├─ index.html                  ← app shell, header, stepper, station containers
+├─ admin.html                  ← standalone local results dashboard
+├─ magtanim.mp3                ← looping audio (idagdag sa project root)
 ├─ README.md
 ├─ assets/
 │  ├─ css/
-│  │  └─ main.css             ← design system, responsive layout, print styles
+│  │  ├─ main.css             ← design system, responsive layout, print styles
+│  │  └─ admin.css            ← isolated admin dashboard styles
 │  ├─ images/
 │  │  ├─ favicon.svg
 │  │  ├─ Mutya (Nakatayo).png
@@ -84,6 +88,9 @@ Sofia's Thesis/
 │  └─ js/
 │     ├─ state.js             ← state manager + LocalStorage + shared utilities
 │     ├─ dialogue.js          ← visual-novel dialogue engine
+│     ├─ quizzes.js           ← 25-item station quiz renderer
+│     ├─ results.js           ← submission history in LocalStorage
+│     ├─ admin.js             ← admin dashboard controller
 │     ├─ station1.js          ← comprehension check
 │     ├─ station2.js          ← lyric analysis accordion
 │     ├─ station3.js          ← food-security flowchart
@@ -171,9 +178,10 @@ Maaari ring gamitin ang `Ctrl + P` / `Cmd + P`; awtomatikong binubuo ng app ang 
 ## Progreso at Privacy
 
 - Naka-save ang progreso sa browser sa ilalim ng key na `dalumAwit.state.v1`.
+- Naka-save ang kasaysayan ng mga pagtatangka sa `dalumAwit.submissions.v1` at makikita sa direktang URL na `admin.html`.
 - Hindi kailangan ng account at walang data na ipinapadala sa server.
 - Ang mga sagot ay nananatili lamang sa device/browser na ginamit.
-- Ang **reset button** sa header ay nagbubura ng lahat ng sagot at progreso. Mag-reload ang pahina at babalik sa Station 1.
+- Ang **reset button** sa header ay nagbubura ng kasalukuyang progreso ngunit pinananatili ang naitalang attempt para sa dashboard. Mag-reload ang pahina at babalik sa landing page.
 - Kung gagamit ng shared classroom computer, pindutin ang reset bago magsimula ang susunod na mag-aaral.
 
 ---
@@ -213,4 +221,4 @@ Maaari ring gamitin ang `Ctrl + P` / `Cmd + P`; awtomatikong binubuo ng app ang 
 - `DALUM-AWIT_TESIS.docx` — Kabanata II, metodolohiya, at framing ng pag-aaral.
 - `drive-download-20261021T130856Z-1-001.zip` — walong transparent na character PNG, inilagay sa `assets/images/`.
 
-Ang awit na “Magtanim ay 'Di Biro” ay isang tradisyunal na awiting-bayang Pilipino. Ang app ay ginawa bilang interbensyong pampagtuturo para sa Baitang 10 Filipino.
+Ang awit na “Magtanim ay 'Di Biro” ay isang tradisyunal na awiting-bayang Pilipino. Ang app ay ginawa bilang interbensyong pampagtuturo para sa Baitang 7 Filipino.

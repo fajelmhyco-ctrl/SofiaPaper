@@ -31,9 +31,13 @@
 
     if (!mount || !lines.length) return null;
 
-    const savedIndex = window.AppState.getState().dialogue[stationId] || 0;
+    const savedIndex = typeof options.getSavedIndex === 'function'
+      ? options.getSavedIndex()
+      : window.AppState.getState().dialogue[stationId] || 0;
     let index = U.clamp(Number(savedIndex) || 0, 0, lines.length - 1);
-    let done = window.AppState.isDialogueDone(stationId);
+    let done = typeof options.isDone === 'function'
+      ? Boolean(options.isDone())
+      : window.AppState.isDialogueDone(stationId);
     let currentScene = '';
 
     mount.innerHTML = [
@@ -49,7 +53,7 @@
       '  <div class="sprite sprite-left" data-sprite="mutya" aria-hidden="true"><img alt="" draggable="false"></div>',
       '  <div class="sprite sprite-right" data-sprite="isko" aria-hidden="true"><img alt="" draggable="false"></div>',
       '  <div class="sprite sprite-right sprite-parents" data-sprite="parents" aria-hidden="true"><img alt="" draggable="false"></div>',
-      '  <div class="dialogue-panel" data-dialogue-panel role="group" aria-label="Usapan ng mga tauhan">',
+      '  <div class="dialogue-panel" data-dialogue-panel role="group" aria-label="' + U.escapeHtml(options.ariaLabel || 'Usapan ng mga tauhan') + '">',
       '    <div class="dialogue-meter" aria-hidden="true"><span></span></div>',
       '    <span class="speaker-tag"></span>',
       '    <p class="dialogue-text" aria-live="polite"></p>',
@@ -164,10 +168,10 @@
       if (index === lines.length - 1) {
         nextBtn.classList.add('is-finish');
         if (done) {
-          nextLabel.textContent = 'Tapos na';
+          nextLabel.textContent = options.completedLabel || 'Tapos na';
           nextBtn.disabled = true;
         } else {
-          nextLabel.textContent = 'Tapusin ang usapan';
+          nextLabel.textContent = options.finishLabel || 'Tapusin ang usapan';
           nextBtn.disabled = false;
         }
       } else {
@@ -185,14 +189,16 @@
       const target = U.clamp(Number(nextIndex) || 0, 0, lines.length - 1);
       if (target === index) return;
       index = target;
-      window.AppState.setDialogueIndex(stationId, index);
+      if (typeof options.setIndex === 'function') options.setIndex(index);
+      else window.AppState.setDialogueIndex(stationId, index);
       render();
     }
 
     function finish() {
       if (!done) {
         done = true;
-        window.AppState.markDialogueDone(stationId);
+        if (typeof options.markDone === 'function') options.markDone();
+        else window.AppState.markDialogueDone(stationId);
         if (typeof options.onComplete === 'function') {
           options.onComplete({ stationId: stationId, station: station });
         }

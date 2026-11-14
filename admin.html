@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="fil">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#173c2b">
+  <title>Research Results · DALUM-AWIT</title>
+  <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body>
+  <header class="admin-header">
+    <div class="admin-header-inner">
+      <div>
+        <p class="admin-brand">DALUM-AWIT</p>
+        <h1>Research Results</h1>
+        <p class="admin-lede">Mga naitalang sagot at datos ng mag-aaral sa browser na ito.</p>
+      </div>
+      <span class="storage-chip"><span aria-hidden="true"></span>Lokal na datos</span>
+    </div>
+  </header>
+
+  <main class="admin-main">
+    <section class="metrics" aria-label="Buod ng mga resulta">
+      <article class="metric"><span>Mga tala</span><strong id="metricTotal">0</strong><small>Lahat ng pagtatangka</small></article>
+      <article class="metric"><span>Naisumite</span><strong id="metricSubmitted">0</strong><small>Kumpletong 25 tanong</small></article>
+      <article class="metric"><span>Karaniwang puntos</span><strong id="metricAverage">—</strong><small>Sa mga naisumite</small></article>
+      <article class="metric"><span>Completion rate</span><strong id="metricCompletion">0%</strong><small>Bahagi ng kumpletong tala</small></article>
+    </section>
+
+    <section class="admin-panel" aria-labelledby="stationResultsTitle">
+      <div class="panel-heading">
+        <div>
+          <h2 id="stationResultsTitle">Resulta bawat istasyon</h2>
+          <p>Katumpakan batay sa mga nasagutang item.</p>
+        </div>
+      </div>
+      <div class="station-results" id="stationResults"></div>
+    </section>
+
+    <section class="admin-panel" aria-labelledby="submissionsTitle">
+      <div class="panel-heading panel-heading-actions">
+        <div>
+          <h2 id="submissionsTitle">Mga tala ng mag-aaral</h2>
+          <p>Hanapin, suriin, o i-export ang mga sagot.</p>
+        </div>
+        <div class="export-actions">
+          <button class="admin-button" id="exportCsv" type="button">I-export ang CSV</button>
+          <button class="admin-button admin-button-secondary" id="exportJson" type="button">I-export ang JSON</button>
+        </div>
+      </div>
+
+      <div class="table-tools">
+        <label>
+          <span>Hanapin</span>
+          <input id="searchInput" type="search" placeholder="Pangalan o seksyon">
+        </label>
+        <label>
+          <span>Katayuan</span>
+          <select id="statusFilter">
+            <option value="all">Lahat</option>
+            <option value="submitted">Naisumite</option>
+            <option value="in-progress">Isinasagawa</option>
+          </select>
+        </label>
+        <button class="admin-button admin-button-secondary refresh-button" id="refreshResults" type="button">I-refresh</button>
+      </div>
+
+      <div class="table-wrap" id="resultsTableWrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Mag-aaral</th>
+              <th>Seksyon</th>
+              <th>Katayuan</th>
+              <th>Puntos</th>
+              <th>Nasagutan</th>
+              <th>Huling update</th>
+              <th><span class="visually-hidden">Aksyon</span></th>
+            </tr>
+          </thead>
+          <tbody id="resultsBody"></tbody>
+        </table>
+      </div>
+
+      <div class="empty-results" id="emptyResults" hidden>
+        <h3>Wala pang naitalang sagot</h3>
+        <p>Lalabas dito ang datos kapag nagsimula nang sumagot ang mga mag-aaral gamit ang parehong browser at site address.</p>
+      </div>
+    </section>
+
+    <p class="privacy-note">Ang dashboard na ito ay gumagamit ng <code>localStorage</code>. Ang datos ay makikita lamang sa parehong browser, device, at site origin kung saan sinagutan ang activity.</p>
+  </main>
+
+  <dialog class="result-dialog" id="resultDialog" aria-labelledby="resultDialogTitle">
+    <div class="result-dialog-head">
+      <div>
+        <p>Detalye ng pagtatangka</p>
+        <h2 id="resultDialogTitle">Sagot ng mag-aaral</h2>
+      </div>
+      <button class="dialog-close" id="closeResultDialog" type="button" aria-label="Isara">×</button>
+    </div>
+    <div class="result-dialog-body" id="resultDialogBody"></div>
+  </dialog>
+
+  <script src="data/storyData.js"></script>
+  <script src="assets/js/admin.js"></script>
+</body>
+</html>

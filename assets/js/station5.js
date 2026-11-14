@@ -144,7 +144,7 @@
       '    <div class="print-brand">',
       '      <span class="print-brand-mark" aria-hidden="true"><svg class="icon"><use href="#i-rice"></use></svg></span>',
       '      <div>',
-      '        <p class="print-kicker">Baitang 10 · Filipino</p>',
+      '        <p class="print-kicker">' + U.escapeHtml((story.meta && story.meta.grade ? story.meta.grade : 'Baitang 7') + ' · ' + (story.meta && story.meta.subject ? story.meta.subject : 'Filipino')) + '</p>',
       '        <h1>DALUM-AWIT</h1>',
       '        <p class="print-subtitle">Ang Paglalakbay ni Mutya: Sa Bukid ng mga Kuwento</p>',
       '      </div>',
@@ -205,7 +205,7 @@
       '  </div>',
 
       '  <footer class="print-footer">',
-      '    <span>DALUM-AWIT · Filipino 10</span>',
+      '    <span>DALUM-AWIT · Filipino 7</span>',
       '    <span>Inihanda para sa pagtatasa ng guro</span>',
       '  </footer>',
       '</div>'
@@ -236,6 +236,7 @@
   }
 
   function onShow() {
+    window.QuizManager.paintStation(5);
     syncSummary();
     buildPrintReport();
   }

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="DALUM-AWIT: Ang Paglalakbay ni Mutya sa Bukid ng mga Kuwento — isang interactive na station-based na aralin sa Filipino 10.">
+  <meta name="description" content="DALUM-AWIT: Ang Paglalakbay ni Mutya sa Bukid ng mga Kuwento — isang interactive na station-based na aralin sa Filipino 7.">
   <meta name="theme-color" content="#1f4d3a">
   <title>DALUM-AWIT · Ang Paglalakbay ni Mutya</title>
   <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
@@ -12,7 +12,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/main.css">
 </head>
-<body>
+<body class="is-landing">
   <a class="skip-link" href="#main-content">Lumaktaw sa nilalaman</a>
 
   <svg class="svg-sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
@@ -110,6 +110,36 @@
 
   <div class="paper-noise" aria-hidden="true"></div>
 
+  <section class="landing-screen" id="landingScreen" aria-labelledby="landingTitle">
+    <div class="landing-field" aria-hidden="true"></div>
+    <div class="landing-inner">
+      <div class="landing-copy">
+        <p class="landing-grade">Filipino 7 · Larawang kuwento at pagsusulit</p>
+        <p class="landing-brand">DALUM-AWIT</p>
+        <h1 id="landingTitle">Ang Paglalakbay ni Mutya</h1>
+        <p class="landing-subtitle">Sa Bukid ng mga Kuwento</p>
+        <p class="landing-intro">Samahan si Mutya sa palayan at tuklasin ang kuwento, sakripisyo, at pag-asa sa likod ng awiting “Magtanim ay ’Di Biro.”</p>
+        <button class="btn btn-gold landing-start" id="startBtn" type="button" disabled>
+          Simulan ang paglalakbay
+          <svg class="icon" aria-hidden="true"><use href="#i-arrow-right"></use></svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section class="slides-screen" id="pictureSlidesScreen" aria-labelledby="pictureSlidesTitle" hidden>
+    <div class="slides-shell">
+      <header class="slides-heading">
+        <p class="eyebrow"><span class="eyebrow-index">Unang Hakbang</span><span class="eyebrow-sep" aria-hidden="true"></span><span>Larawang Kuwento</span></p>
+        <h1 id="pictureSlidesTitle">Kilalanin muna ang kuwento ni Mutya</h1>
+        <p>Pindutin ang <strong>Susunod</strong> at tapusin ang lahat ng larawan bago sagutan ang mga tanong.</p>
+      </header>
+      <div class="dialogue-mount" id="pictureSlidesMount"></div>
+    </div>
+  </section>
+
+  <audio id="backgroundAudio" src="magtanim.mp3" loop preload="auto"></audio>
+
   <header class="site-header" id="top">
     <div class="header-inner">
       <a class="brand" href="#" id="brandHome" aria-label="DALUM-AWIT — Ang Paglalakbay ni Mutya: Sa Bukid ng mga Kuwento. Bumalik sa simula.">
@@ -122,7 +152,7 @@
         </span>
       </a>
       <div class="header-actions">
-        <span class="grade-chip">Filipino 10</span>
+        <span class="grade-chip">Filipino 7</span>
         <button class="icon-button" id="helpBtn" type="button" aria-label="Tulong at gabay" title="Tulong at gabay">
           <svg class="icon" aria-hidden="true"><use href="#i-help"></use></svg>
         </button>
@@ -150,15 +180,7 @@
         <div class="dialogue-mount" id="stage-1"></div>
 
         <div class="station-activity" id="station1Activity" hidden>
-          <article class="activity-card quiz-card">
-            <div class="card-kicker">
-              <svg class="icon" aria-hidden="true"><use href="#i-spark"></use></svg>
-              <span>Tsek ng Pag-unawa</span>
-            </div>
-            <h2 id="quizQuestion">Ano ang pangunahing katangian ng maluway?</h2>
-            <div class="quiz-options" id="quizOptions" role="group" aria-labelledby="quizQuestion"></div>
-            <div class="quiz-feedback" id="quizFeedback" role="status" hidden></div>
-          </article>
+          <div id="station1Quiz" data-station-quiz="1"></div>
 
           <div class="station-nav">
             <button class="btn btn-ghost" type="button" id="station1Review">
@@ -203,6 +225,8 @@
           <p id="station2ClosingText"></p>
         </div>
 
+        <div id="station2Quiz" data-station-quiz="2"></div>
+
         <div class="station-nav">
           <button class="btn btn-ghost" type="button" data-back="2">
             <svg class="icon" aria-hidden="true"><use href="#i-arrow-left"></use></svg>
@@ -234,13 +258,15 @@
             <p class="flow-note" id="flowNote"></p>
           </article>
 
+          <div id="station3Quiz" data-station-quiz="3"></div>
+
           <div class="station-nav">
             <button class="btn btn-ghost" type="button" data-back="3">
               <svg class="icon" aria-hidden="true"><use href="#i-arrow-left"></use></svg>
               Station 2
             </button>
-            <p class="nav-hint">Nakita mo na ang buong daloy ng pagkain.</p>
-            <button class="btn btn-primary" type="button" id="station3Next">
+            <p class="nav-hint" id="station3Hint">Sagutan ang lahat ng tanong upang magpatuloy.</p>
+            <button class="btn btn-primary" type="button" id="station3Next" disabled>
               Magpatuloy sa Station 4
               <svg class="icon" aria-hidden="true"><use href="#i-arrow-right"></use></svg>
             </button>
@@ -305,6 +331,8 @@
             </div>
           </div>
 
+          <div id="station4Quiz" data-station-quiz="4"></div>
+
           <div class="station-nav">
             <button class="btn btn-ghost" type="button" data-back="4">
               <svg class="icon" aria-hidden="true"><use href="#i-arrow-left"></use></svg>
@@ -333,6 +361,8 @@
 
         <p class="section-intro station5-opening" id="station5Opening"></p>
 
+        <div id="station5Quiz" data-station-quiz="5"></div>
+
         <section class="synthesis-section" aria-labelledby="synthesisTitle">
           <div class="section-heading-row">
             <div>
@@ -356,7 +386,7 @@
           <article class="summary-card">
             <header class="summary-head">
               <div>
-                <p class="summary-kicker">DALUM-AWIT · Filipino 10</p>
+                <p class="summary-kicker">DALUM-AWIT · Filipino 7</p>
                 <h2>Ulat ng Mag-aaral</h2>
                 <p>Ang Paglalakbay ni Mutya: Sa Bukid ng mga Kuwento</p>
               </div>
@@ -374,7 +404,7 @@
                 </label>
                 <label class="field">
                   <span>Baitang at Seksyon</span>
-                  <input id="studentSection" type="text" maxlength="60" placeholder="Hal. 10 - Rizal">
+                  <input id="studentSection" type="text" maxlength="60" placeholder="Hal. 7 - Rizal">
                 </label>
                 <div class="summary-date">
                   <span>Petsa</span>
@@ -445,7 +475,7 @@
 
   <footer class="site-footer">
     <div class="footer-inner">
-      <p><strong>DALUM-AWIT</strong> · Isang interbensyong pampagtuturo sa Filipino 10</p>
+      <p><strong>DALUM-AWIT</strong> · Isang interbensyong pampagtuturo sa Filipino 7</p>
       <p>Batay sa awiting-bayang “Magtanim ay 'Di Biro.”</p>
     </div>
   </footer>
@@ -460,6 +490,7 @@
       <p class="dialog-kicker">Gabay sa Paggamit</p>
       <h2 id="helpTitle">Paano maglakbay kasama si Mutya</h2>
       <ol class="help-list">
+        <li><strong>Tapusin muna ang larawang kuwento.</strong> Sunod-sunod itong bubukas bago maging available ang mga tanong.</li>
         <li><strong>Sunod-sunod ang mga istasyon.</strong> Tapusin ang bawat gawain upang mabuksan ang susunod.</li>
         <li><strong>Buksan ang bawat card sa Station 2.</strong> Pindutin ang mga linyang mula sa awit upang makita ang pagsusuri.</li>
         <li><strong>Pumili at magpaliwanag sa Station 4.</strong> Kailangan ang isyung pinili, sagot na OO o HINDI, at paliwanag na may 40 karakter o higit pa.</li>
@@ -493,6 +524,8 @@
   <script src="data/storyData.js"></script>
   <script src="assets/js/state.js"></script>
   <script src="assets/js/dialogue.js"></script>
+  <script src="assets/js/results.js"></script>
+  <script src="assets/js/quizzes.js"></script>
   <script src="assets/js/station1.js"></script>
   <script src="assets/js/station2.js"></script>
   <script src="assets/js/station3.js"></script>

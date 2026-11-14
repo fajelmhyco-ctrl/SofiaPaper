@@ -305,6 +305,226 @@ a {
 }
 
 /* ------------------------------------------------------------
+   Entry flow — landing and picture slides
+   ------------------------------------------------------------ */
+body.is-landing,
+body.is-slides {
+  min-height: 100svh;
+}
+
+body.is-landing > .skip-link,
+body.is-landing > .site-header,
+body.is-landing > .app-main,
+body.is-landing > .site-footer,
+body.is-slides > .skip-link,
+body.is-slides > .site-header,
+body.is-slides > .app-main,
+body.is-slides > .site-footer {
+  display: none;
+}
+
+.landing-screen,
+.slides-screen {
+  position: relative;
+  z-index: 2;
+  min-height: 100svh;
+}
+
+.landing-screen {
+  display: grid;
+  isolation: isolate;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 18% 10%, rgba(255, 249, 222, 0.92), transparent 28rem),
+    linear-gradient(180deg, #cde8df 0%, #eaf0d1 58%, #ddc985 100%);
+}
+
+.landing-screen::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -3;
+  background:
+    radial-gradient(circle at 77% 15%, rgba(255, 240, 171, 0.92) 0 58px, rgba(255, 240, 171, 0.28) 59px 102px, transparent 103px),
+    repeating-linear-gradient(98deg, transparent 0 62px, rgba(38, 91, 58, 0.08) 62px 65px);
+  pointer-events: none;
+}
+
+.landing-screen::after {
+  content: "";
+  position: absolute;
+  right: clamp(-44px, 1vw, 28px);
+  bottom: -3%;
+  z-index: -1;
+  width: min(52vw, 690px);
+  height: 94%;
+  background: url("../images/Mutya%20(Nakatayo).png") right bottom / contain no-repeat;
+  filter: drop-shadow(0 30px 26px rgba(20, 54, 34, 0.3));
+  pointer-events: none;
+}
+
+.landing-field {
+  position: absolute;
+  right: -8%;
+  bottom: -20%;
+  left: -8%;
+  z-index: -2;
+  height: 54%;
+  border-radius: 50% 50% 0 0 / 18% 18% 0 0;
+  background:
+    repeating-linear-gradient(96deg, transparent 0 42px, rgba(24, 70, 42, 0.12) 42px 45px),
+    linear-gradient(180deg, #9db568 0%, #6f934f 54%, #436d42 100%);
+  box-shadow: inset 0 22px 45px rgba(48, 84, 43, 0.18);
+}
+
+.landing-inner {
+  display: flex;
+  align-items: center;
+  width: min(1200px, 100%);
+  min-height: 100svh;
+  margin: 0 auto;
+  padding: clamp(36px, 6vw, 80px) 24px;
+}
+
+.landing-copy {
+  width: min(610px, 56%);
+  padding: clamp(27px, 4.2vw, 50px);
+  border: 1px solid rgba(255, 255, 255, 0.58);
+  border-radius: 30px;
+  background: rgba(255, 253, 247, 0.88);
+  box-shadow: 0 34px 80px -40px rgba(16, 43, 32, 0.62);
+  backdrop-filter: blur(13px);
+  -webkit-backdrop-filter: blur(13px);
+}
+
+.landing-grade {
+  margin-bottom: 13px;
+  color: var(--gold-700);
+  font-size: 0.71rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+}
+
+.landing-brand {
+  color: var(--green-800);
+  font-family: var(--font-display);
+  font-size: clamp(1rem, 1.6vw, 1.25rem);
+  font-weight: 700;
+  letter-spacing: 0.18em;
+}
+
+.landing-copy h1 {
+  max-width: 10ch;
+  margin: 12px 0 4px;
+  font-size: clamp(3rem, 6.4vw, 5.6rem);
+  line-height: 0.92;
+  letter-spacing: -0.055em;
+  text-wrap: balance;
+}
+
+.landing-subtitle {
+  color: var(--terra-700);
+  font-family: var(--font-display);
+  font-size: clamp(1.3rem, 2.4vw, 1.85rem);
+  font-weight: 600;
+}
+
+.landing-intro {
+  max-width: 52ch;
+  margin: 20px 0 25px;
+  color: var(--ink-soft);
+  font-size: 0.96rem;
+  line-height: 1.75;
+}
+
+.landing-start {
+  min-height: 49px;
+  padding-inline: 24px;
+}
+
+.slides-screen {
+  padding: 38px 24px 72px;
+}
+
+.slides-shell {
+  width: min(1200px, 100%);
+  margin: 0 auto;
+}
+
+.slides-heading {
+  max-width: 780px;
+  margin-bottom: 26px;
+}
+
+.slides-heading h1 {
+  margin: 10px 0 11px;
+  font-size: clamp(2.2rem, 4.6vw, 3.45rem);
+  line-height: 1.03;
+  letter-spacing: -0.035em;
+}
+
+.slides-heading > p:last-child {
+  max-width: 68ch;
+  color: var(--ink-soft);
+  font-size: 0.96rem;
+  line-height: 1.7;
+}
+
+.slides-heading strong {
+  color: var(--green-800);
+}
+
+#backgroundAudio {
+  display: none;
+}
+
+/* Multi-item quizzes reuse the existing quiz cards and controls. */
+.station-quiz-set {
+  display: grid;
+  gap: 16px;
+  margin-top: 28px;
+  scroll-margin-top: 155px;
+}
+
+.station-quiz-set:empty {
+  display: none;
+}
+
+.quiz-set-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 0 2px;
+}
+
+.quiz-set-heading h2 {
+  font-size: clamp(1.55rem, 2.5vw, 2rem);
+}
+
+.quiz-set-progress {
+  flex: none;
+  padding: 7px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 253, 247, 0.78);
+  color: var(--ink-soft);
+  font-size: 0.72rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.quiz-set-list {
+  display: grid;
+  gap: 16px;
+}
+
+.quiz-card[data-quiz-question] h2 {
+  font-size: clamp(1.25rem, 2.15vw, 1.72rem);
+  line-height: 1.35;
+}
+
+/* ------------------------------------------------------------
    3. Header and station stepper
    ------------------------------------------------------------ */
 .site-header {
@@ -3333,6 +3553,49 @@ textarea:focus {
 }
 
 @media (max-width: 760px) {
+  .landing-screen::after {
+    top: 4%;
+    right: -8%;
+    bottom: auto;
+    width: 68vw;
+    height: 58%;
+    opacity: 0.4;
+    background-position: right top;
+  }
+
+  .landing-inner {
+    align-items: flex-end;
+    padding: 28px 16px;
+  }
+
+  .landing-copy {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    padding: 27px 23px;
+    border-radius: 24px;
+    background: rgba(255, 253, 247, 0.92);
+  }
+
+  .landing-copy h1 {
+    max-width: 11ch;
+    font-size: clamp(2.35rem, 11vw, 4.1rem);
+  }
+
+  .slides-screen {
+    padding: 28px 16px 60px;
+  }
+
+  .slides-heading {
+    margin-bottom: 21px;
+  }
+
+  .quiz-set-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 9px;
+  }
+
   .header-inner {
     padding: 12px 17px 10px;
   }
@@ -3704,6 +3967,24 @@ textarea:focus {
 }
 
 @media (max-width: 600px) {
+  .landing-start {
+    width: 100%;
+    padding-inline: 16px;
+    white-space: normal;
+  }
+
+  .landing-intro {
+    font-size: 0.9rem;
+  }
+
+  .slides-heading h1 {
+    font-size: clamp(1.9rem, 9vw, 2.45rem);
+  }
+
+  .station-quiz-set {
+    margin-top: 22px;
+  }
+
   .grade-chip {
     display: none;
   }
@@ -4043,6 +4324,9 @@ textarea:focus {
   body > .site-header,
   body > .site-footer,
   body > .app-main,
+  body > .landing-screen,
+  body > .slides-screen,
+  body > audio,
   body > .toast,
   body > .paper-noise,
   body > .skip-link,
