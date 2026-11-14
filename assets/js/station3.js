@@ -91,6 +91,7 @@
   function reveal(shouldScroll) {
     els.activity.hidden = false;
     renderDetail();
+    updateNext();
     if (shouldScroll) {
       window.setTimeout(function () {
         els.activity.scrollIntoView({
@@ -105,9 +106,19 @@
     if (window.AppState.isDialogueDone(3)) {
       els.activity.hidden = false;
       renderDetail();
+      window.QuizManager.paintStation(3);
+      updateNext();
     } else {
       els.activity.hidden = true;
     }
+  }
+
+  function updateNext() {
+    const quizComplete = window.QuizManager.isStationComplete(3);
+    els.next.disabled = !quizComplete;
+    els.hint.textContent = quizComplete
+      ? 'Nasagutan mo na ang lahat. Maaari nang magpatuloy sa Station 4.'
+      : 'Sagutan ang lahat ng tanong upang magpatuloy.';
   }
 
   function init(storyData) {
@@ -119,13 +130,20 @@
     els.flow = document.getElementById('foodFlow');
     els.detail = document.getElementById('flowDetail');
     els.note = document.getElementById('flowNote');
+    els.next = document.getElementById('station3Next');
+    els.hint = document.getElementById('station3Hint');
 
     els.note.textContent = story.flowNote || '';
     buildFlow();
     renderDetail();
 
-    document.getElementById('station3Next').addEventListener('click', function () {
+    els.next.addEventListener('click', function () {
+      if (els.next.disabled) return;
       window.App.completeStation(3);
+    });
+
+    document.addEventListener('dalum:quiz-progress', function (event) {
+      if (event.detail && event.detail.stationId === 3) updateNext();
     });
   }
 

@@ -53,13 +53,33 @@
 
   const STORAGE_KEY = 'dalumAwit.state.v1';
 
+  function createAttemptId() {
+    try {
+      if (window.crypto && typeof window.crypto.randomUUID === 'function') {
+        return window.crypto.randomUUID();
+      }
+    } catch (error) {
+      /* Fall through to a timestamp-based identifier. */
+    }
+    return 'attempt-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+  }
+
   function createDefaultState() {
     return {
-      version: 1,
+      version: 2,
+      attemptId: createAttemptId(),
       currentStation: 1,
       unlockedStation: 1,
       visited: [1],
       completed: [],
+      pictureSlides: {
+        index: 0,
+        complete: false
+      },
+      assessment: {
+        answers: {},
+        submittedAt: null
+      },
       dialogue: { 1: 0, 3: 0, 4: 0 },
       dialogueDone: {},
       station1: {
@@ -122,6 +142,9 @@
       saved = null;
     }
 
+    /* Version 2 introduces the required slide gate and 25-item assessment. */
+    if (!isPlainObject(saved) || Number(saved.version) !== 2) saved = null;
+
     const state = mergeDefaults(defaults, saved);
     state.currentStation = window.DalumUtils.clamp(Number(state.currentStation) || 1, 1, 5);
     state.unlockedStation = window.DalumUtils.clamp(Number(state.unlockedStation) || 1, 1, 5);
@@ -133,6 +156,12 @@
     if (!Array.isArray(state.visited) || !state.visited.length) state.visited = [state.currentStation];
     if (!Array.isArray(state.completed)) state.completed = [];
     if (!Array.isArray(state.station2.opened)) state.station2.opened = [];
+    if (!state.attemptId) state.attemptId = createAttemptId();
+    if (!isPlainObject(state.pictureSlides)) state.pictureSlides = { index: 0, complete: false };
+    state.pictureSlides.index = Math.max(0, Number(state.pictureSlides.index) || 0);
+    state.pictureSlides.complete = Boolean(state.pictureSlides.complete);
+    if (!isPlainObject(state.assessment)) state.assessment = { answers: {}, submittedAt: null };
+    if (!isPlainObject(state.assessment.answers)) state.assessment.answers = {};
 
     return state;
   }
@@ -229,10 +258,43 @@
       return Boolean(state.dialogueDone[stationId]);
     },
 
-    setQuizAnswer(answerId, isCorrect) {
-      state.station1.quizAnswer = answerId;
-      state.station1.quizCorrect = Boolean(isCorrect);
+    setPictureSlideIndex(index) {
+      state.pictureSlides.index = Math.max(0, Number(index) || 0);
       commit();
+    },
+
+    completePictureSlides() {
+      state.pictureSlides.complete = true;
+      commit();
+    },
+
+    isPictureSlidesComplete() {
+      return Boolean(state.pictureSlides.complete);
+    },
+
+    setQuizAnswer(questionId, stationId, answerId, isCorrect) {
+      const id = String(questionId || '');
+      if (!id || state.assessment.answers[id]) return false;
+      state.assessment.answers[id] = {
+        stationId: Number(stationId) || 1,
+        answerId: String(answerId || ''),
+        correct: Boolean(isCorrect),
+        answeredAt: new Date().toISOString()
+      };
+      commit();
+      return true;
+    },
+
+    getQuizAnswer(questionId) {
+      return state.assessment.answers[String(questionId || '')] || null;
+    },
+
+    markAssessmentSubmitted() {
+      if (state.assessment.submittedAt) return false;
+      state.assessment.submittedAt = new Date().toISOString();
+      persist();
+      emit();
+      return true;
     },
 
     addOpenedLyric(lyricId) {

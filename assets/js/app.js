@@ -9,6 +9,9 @@
   let story = null;
   let modules = {};
   let engines = {};
+  let pictureEngine = null;
+  let dialoguesInitialized = false;
+  let appEntered = false;
   let activeStation = 1;
   let toastTimer = null;
 
@@ -206,34 +209,37 @@
     const state = window.AppState.getState();
 
     if (stationId === 1) {
-      return window.AppState.isDialogueDone(1) && state.station1.quizCorrect;
+      return window.AppState.isDialogueDone(1) && window.QuizManager.isStationComplete(1);
     }
 
     if (stationId === 2) {
       const lyrics = story.stations[1].lesson.lyrics;
-      return lyrics.every(function (lyric) {
+      const lessonComplete = lyrics.every(function (lyric) {
         return state.station2.opened.indexOf(lyric.id) !== -1;
       });
+      return lessonComplete && window.QuizManager.isStationComplete(2);
     }
 
     if (stationId === 3) {
-      return window.AppState.isDialogueDone(3);
+      return window.AppState.isDialogueDone(3) && window.QuizManager.isStationComplete(3);
     }
 
     if (stationId === 4) {
       if (!state.station4.issue) return false;
       const answer = window.AppState.getAnswer(state.station4.issue);
-      return Boolean(answer.decision) && String(answer.reflection || '').trim().length >= 40;
+      return Boolean(answer.decision) &&
+        String(answer.reflection || '').trim().length >= 40 &&
+        window.QuizManager.isStationComplete(4);
     }
 
     return false;
   }
 
   function completionHint(stationId) {
-    if (stationId === 1) return 'Tapusin muna ang usapan at sagutin nang tama ang tsek ng pag-unawa.';
-    if (stationId === 2) return 'Buksan muna ang lahat ng pagsusuri sa mga linya ng awit.';
-    if (stationId === 3) return 'Tapusin muna ang usapan nina Mutya at Mang Isko.';
-    if (stationId === 4) return 'Pumili ng isyu, sagutin ang OO o HINDI, at magbigay ng paliwanag na may 40 karakter.';
+    if (stationId === 1) return 'Tapusin muna ang larawang kuwento at sagutan ang lahat ng tanong.';
+    if (stationId === 2) return 'Buksan ang lahat ng pagsusuri at sagutan ang lahat ng tanong.';
+    if (stationId === 3) return 'Sagutan muna ang lahat ng tanong sa Station 3.';
+    if (stationId === 4) return 'Kumpletuhin ang paliwanag at sagutan ang lahat ng tanong sa Station 4.';
     return '';
   }
 
@@ -327,6 +333,9 @@
   }
 
   function initDialogues() {
+    if (dialoguesInitialized) return;
+    dialoguesInitialized = true;
+
     const station1 = story.stations.find(function (item) { return item.id === 1; });
     const station3 = story.stations.find(function (item) { return item.id === 3; });
     const station4 = story.stations.find(function (item) { return item.id === 4; });
@@ -347,6 +356,184 @@
       station: station4,
       characters: story.characters,
       onComplete: function () { onDialogueComplete(4); }
+    });
+  }
+
+  /* ------------------------------------------------------------
+     Landing, audio, and required picture-slide gate
+     ------------------------------------------------------------ */
+  function pictureSlideLines() {
+    const lines = [];
+
+    story.stations.forEach(function (station) {
+      if (Array.isArray(station.dialogue) && station.dialogue.length) {
+        station.dialogue.forEach(function (line) {
+          lines.push(Object.assign({}, line));
+        });
+        return;
+      }
+
+      if (station.id === 2 && station.lesson) {
+        lines.push({
+          speaker: 'narrator',
+          text: station.lesson.intro,
+          scene: station.scene || 'field-afternoon',
+          mutya: 'nakatayo',
+          isko: 'nagsasalita'
+        });
+      }
+
+      if (station.id === 5) {
+        if (station.opening) {
+          lines.push({
+            speaker: 'narrator',
+            text: station.opening,
+            scene: station.scene || 'dawn',
+            mutya: 'nakatayo'
+          });
+        }
+        if (station.banner && station.banner.quote) {
+          lines.push({
+            speaker: 'mutya',
+            text: station.banner.quote,
+            scene: station.scene || 'dawn',
+            mutya: 'nagsasalita'
+          });
+        }
+      }
+    });
+
+    return lines;
+  }
+
+  function markStationStoriesViewed() {
+    story.stations.forEach(function (station) {
+      if (!Array.isArray(station.dialogue) || !station.dialogue.length) return;
+      window.AppState.setDialogueIndex(station.id, station.dialogue.length - 1);
+      if (!window.AppState.isDialogueDone(station.id)) {
+        window.AppState.markDialogueDone(station.id);
+      }
+    });
+  }
+
+  function enterStudentApp(options) {
+    const opts = options || {};
+    if (!window.AppState.isPictureSlidesComplete()) return;
+    if (appEntered) return;
+
+    markStationStoriesViewed();
+
+    const landing = document.getElementById('landingScreen');
+    const slides = document.getElementById('pictureSlidesScreen');
+    if (landing) landing.hidden = true;
+    if (slides) slides.hidden = true;
+    document.body.classList.remove('is-landing', 'is-slides');
+
+    appEntered = true;
+    initDialogues();
+
+    const saved = window.AppState.getState();
+    showStation(saved.currentStation || 1, {
+      scroll: opts.fromSlides ? false : opts.scroll,
+      focus: opts.fromSlides ? false : opts.focus
+    });
+    refreshStepper();
+
+    if (opts.fromSlides) {
+      window.setTimeout(function () {
+        const questionSection = document.getElementById('station1Quiz') || document.getElementById('station1Activity');
+        if (questionSection) {
+          questionSection.scrollIntoView({
+            behavior: App.prefersReducedMotion() ? 'auto' : 'smooth',
+            block: 'start'
+          });
+          const firstQuestion = questionSection.querySelector('h2');
+          if (firstQuestion) {
+            firstQuestion.setAttribute('tabindex', '-1');
+            firstQuestion.focus({ preventScroll: true });
+          }
+        }
+      }, 120);
+    }
+  }
+
+  function completePictureSlides() {
+    window.AppState.completePictureSlides();
+    markStationStoriesViewed();
+    enterStudentApp({ fromSlides: true });
+  }
+
+  function showPictureSlides() {
+    const landing = document.getElementById('landingScreen');
+    const slides = document.getElementById('pictureSlidesScreen');
+    if (landing) landing.hidden = true;
+    if (slides) slides.hidden = false;
+    document.body.classList.remove('is-landing');
+    document.body.classList.add('is-slides');
+
+    if (!pictureEngine) {
+      pictureEngine = window.DialogueEngine.create(document.getElementById('pictureSlidesMount'), {
+        station: {
+          id: 'picture-slides',
+          scene: 'field-morning',
+          dialogue: pictureSlideLines()
+        },
+        characters: story.characters,
+        ariaLabel: 'Sunod-sunod na larawang kuwento',
+        finishLabel: 'Pumunta sa mga tanong',
+        completedLabel: 'Napanood na',
+        getSavedIndex: function () {
+          return window.AppState.getState().pictureSlides.index;
+        },
+        setIndex: function (index) {
+          window.AppState.setPictureSlideIndex(index);
+        },
+        isDone: function () {
+          return window.AppState.isPictureSlidesComplete();
+        },
+        markDone: function () {
+          window.AppState.completePictureSlides();
+        },
+        onComplete: completePictureSlides
+      });
+    }
+
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  }
+
+  function startAudio() {
+    const audio = document.getElementById('backgroundAudio');
+    if (!audio) return;
+    audio.volume = 0.38;
+    const playback = audio.play();
+    if (playback && typeof playback.catch === 'function') {
+      playback.catch(function () {
+        /* The student flow still works while the MP3 is absent or unavailable. */
+      });
+    }
+  }
+
+  function bindEntryFlow() {
+    const startButton = document.getElementById('startBtn');
+    if (!startButton) return;
+    startButton.disabled = false;
+    startButton.addEventListener('click', function () {
+      startAudio();
+      if (window.AppState.isPictureSlidesComplete()) {
+        enterStudentApp({ scroll: false, focus: false });
+      } else {
+        showPictureSlides();
+      }
+    });
+  }
+
+  function bindResultsSync() {
+    if (!window.ResultsStore) return;
+    window.AppState.subscribe(function (state) {
+      window.ResultsStore.syncSoon(story, state);
+    });
+    window.addEventListener('pagehide', function () {
+      window.ResultsStore.syncNow(story, window.AppState.getState());
     });
   }
 
@@ -412,6 +599,9 @@
     });
 
     document.getElementById('confirmReset').addEventListener('click', function () {
+      if (window.ResultsStore && story) {
+        window.ResultsStore.syncNow(story, window.AppState.getState());
+      }
       window.AppState.reset();
       window.location.reload();
     });
@@ -435,6 +625,11 @@
     try {
       story = await loadStoryData();
     } catch (error) {
+      document.body.classList.remove('is-landing', 'is-slides');
+      const landing = document.getElementById('landingScreen');
+      const slides = document.getElementById('pictureSlidesScreen');
+      if (landing) landing.hidden = true;
+      if (slides) slides.hidden = true;
       document.querySelectorAll('.station-view').forEach(function (section) {
         section.hidden = true;
       });
@@ -447,14 +642,12 @@
 
     renderHeaders();
     buildStepper();
+    window.QuizManager.init(story);
     initModules();
-    initDialogues();
     preloadImages();
     bindGlobalUI();
-
-    const saved = window.AppState.getState();
-    showStation(saved.currentStation || 1, { scroll: false, focus: false });
-    refreshStepper();
+    bindResultsSync();
+    bindEntryFlow();
   }
 
   if (document.readyState === 'loading') {
