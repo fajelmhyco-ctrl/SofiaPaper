@@ -66,7 +66,7 @@
 
   function createDefaultState() {
     return {
-      version: 2,
+      version: 3,
       attemptId: createAttemptId(),
       currentStation: 1,
       unlockedStation: 1,
@@ -142,8 +142,13 @@
       saved = null;
     }
 
-    /* Version 2 introduces the required slide gate and 25-item assessment. */
-    if (!isPlainObject(saved) || Number(saved.version) !== 2) saved = null;
+    /* Preserve version-2 answers while removing its full-story completion shortcut. */
+    if (!isPlainObject(saved) || ![2, 3].includes(Number(saved.version))) saved = null;
+    if (saved && Number(saved.version) === 2) {
+      saved.version = 3;
+      saved.dialogue = { 1: 0, 3: 0, 4: 0 };
+      saved.dialogueDone = {};
+    }
 
     const state = mergeDefaults(defaults, saved);
     state.currentStation = window.DalumUtils.clamp(Number(state.currentStation) || 1, 1, 5);
@@ -328,6 +333,7 @@
         state.station4.answers[issueId] = { decision: null, reflection: '' };
       }
       state.station4.answers[issueId].decision = decision;
+      state.station4.answers[issueId].answeredAt = new Date().toISOString();
       commit();
     },
 
@@ -336,6 +342,7 @@
         state.station4.answers[issueId] = { decision: null, reflection: '' };
       }
       state.station4.answers[issueId].reflection = String(text || '');
+      state.station4.answers[issueId].answeredAt = new Date().toISOString();
       commit();
     },
 
@@ -347,6 +354,7 @@
 
     setFinalInsight(text) {
       state.finalInsight = String(text || '');
+      state.insightAt = new Date().toISOString();
       commit();
     },
 

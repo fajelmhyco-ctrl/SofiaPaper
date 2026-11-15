@@ -11,6 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/viewport.css">
 </head>
 <body class="is-landing">
   <a class="skip-link" href="#main-content">Lumaktaw sa nilalaman</a>
@@ -127,17 +128,6 @@
     </div>
   </section>
 
-  <section class="slides-screen" id="pictureSlidesScreen" aria-labelledby="pictureSlidesTitle" hidden>
-    <div class="slides-shell">
-      <header class="slides-heading">
-        <p class="eyebrow"><span class="eyebrow-index">Unang Hakbang</span><span class="eyebrow-sep" aria-hidden="true"></span><span>Larawang Kuwento</span></p>
-        <h1 id="pictureSlidesTitle">Kilalanin muna ang kuwento ni Mutya</h1>
-        <p>Pindutin ang <strong>Susunod</strong> at tapusin ang lahat ng larawan bago sagutan ang mga tanong.</p>
-      </header>
-      <div class="dialogue-mount" id="pictureSlidesMount"></div>
-    </div>
-  </section>
-
   <audio id="backgroundAudio" src="magtanim.mp3" loop preload="auto"></audio>
 
   <header class="site-header" id="top">
@@ -152,7 +142,7 @@
         </span>
       </a>
       <div class="header-actions">
-        <span class="grade-chip">Filipino 7</span>
+        <span class="grade-chip" id="answerSyncStatus" role="status" aria-live="polite">Filipino 7</span>
         <button class="icon-button" id="helpBtn" type="button" aria-label="Tulong at gabay" title="Tulong at gabay">
           <svg class="icon" aria-hidden="true"><use href="#i-help"></use></svg>
         </button>
@@ -228,7 +218,7 @@
         <div id="station2Quiz" data-station-quiz="2"></div>
 
         <div class="station-nav">
-          <button class="btn btn-ghost" type="button" data-back="2">
+          <button class="btn btn-ghost" type="button" data-back="1">
             <svg class="icon" aria-hidden="true"><use href="#i-arrow-left"></use></svg>
             Station 1
           </button>
@@ -261,7 +251,7 @@
           <div id="station3Quiz" data-station-quiz="3"></div>
 
           <div class="station-nav">
-            <button class="btn btn-ghost" type="button" data-back="3">
+            <button class="btn btn-ghost" type="button" data-back="2">
               <svg class="icon" aria-hidden="true"><use href="#i-arrow-left"></use></svg>
               Station 2
             </button>
@@ -334,7 +324,7 @@
           <div id="station4Quiz" data-station-quiz="4"></div>
 
           <div class="station-nav">
-            <button class="btn btn-ghost" type="button" data-back="4">
+            <button class="btn btn-ghost" type="button" data-back="3">
               <svg class="icon" aria-hidden="true"><use href="#i-arrow-left"></use></svg>
               Station 3
             </button>
@@ -490,7 +480,7 @@
       <p class="dialog-kicker">Gabay sa Paggamit</p>
       <h2 id="helpTitle">Paano maglakbay kasama si Mutya</h2>
       <ol class="help-list">
-        <li><strong>Tapusin muna ang larawang kuwento.</strong> Sunod-sunod itong bubukas bago maging available ang mga tanong.</li>
+        <li><strong>Basahin ang kuwento sa bawat istasyon.</strong> Pindutin ang Susunod; lalabas ang mga tanong pagkatapos ng huling tagpo.</li>
         <li><strong>Sunod-sunod ang mga istasyon.</strong> Tapusin ang bawat gawain upang mabuksan ang susunod.</li>
         <li><strong>Buksan ang bawat card sa Station 2.</strong> Pindutin ang mga linyang mula sa awit upang makita ang pagsusuri.</li>
         <li><strong>Pumili at magpaliwanag sa Station 4.</strong> Kailangan ang isyung pinili, sagot na OO o HINDI, at paliwanag na may 40 karakter o higit pa.</li>
@@ -524,6 +514,8 @@
   <script src="data/storyData.js"></script>
   <script src="assets/js/state.js"></script>
   <script src="assets/js/dialogue.js"></script>
+  <script src="assets/js/database-config.js"></script>
+  <script src="assets/js/database.js"></script>
   <script src="assets/js/results.js"></script>
   <script src="assets/js/quizzes.js"></script>
   <script src="assets/js/station1.js"></script>
@@ -531,6 +523,7 @@
   <script src="assets/js/station3.js"></script>
   <script src="assets/js/station4.js"></script>
   <script src="assets/js/station5.js"></script>
+  <script src="assets/js/viewport.js"></script>
   <script src="assets/js/app.js"></script>
 </body>
 </html>

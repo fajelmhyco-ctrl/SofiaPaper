@@ -1,0 +1,58 @@
+/* Layout only: the existing theme, typography, card and button styles are inherited. */
+@media screen {
+  html.station-viewport-root { height: 100%; overflow: hidden; }
+  body.station-viewport { height: 100vh; height: 100dvh; min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
+  .station-viewport > .site-header { flex: none; position: relative; }
+  .station-viewport > .app-main { flex: 1; min-height: 0; padding-top: 10px; padding-bottom: 10px; overflow: hidden; }
+  .station-viewport .station-shell { height: 100%; min-height: 0; }
+  .station-viewport .station-view:not([hidden]) { height: 100%; display: flex; flex-direction: column; gap: 10px; overflow: hidden; }
+  .station-viewport .station-heading { flex: none; gap: 16px; margin-bottom: 0; }
+  .station-viewport .station-heading h1 { margin: 6px 0; }
+  .station-viewport .dialogue-mount { flex: 1; min-height: 0; }
+  .station-viewport .story-stage { height: 100%; min-height: 0; }
+  .station-viewport .dialogue-panel { bottom: 12px; padding: 20px 20px 12px; }
+  .station-viewport .dialogue-text { min-height: 0; }
+  .station-viewport .dialogue-controls { margin-top: 8px; padding-top: 8px; }
+  .station-viewport > .site-footer, .viewport-source { display: none !important; }
+  .viewport-toolbar { display: flex; flex: none; align-items: center; justify-content: space-between; gap: 6px; }
+  .viewport-dialog { width: min(1000px, calc(100% - 24px)); height: calc(100vh - 24px); height: calc(100dvh - 24px); max-height: none; overflow: hidden; }
+  .viewport-dialog[open] { display: flex; flex-direction: column; }
+  .viewport-dialog-head, .viewport-dialog-nav { display: flex; flex: none; align-items: center; justify-content: space-between; gap: 8px; padding: 12px 16px; }
+  .viewport-dialog-head .card-kicker { margin: 0; }
+  .viewport-dialog-content { flex: 1; min-height: 0; overflow: hidden; padding: 2px 16px; }
+  .viewport-dialog .station-quiz-set { margin: 0; display: block; }
+  .viewport-dialog .quiz-card, .viewport-dialog .viewport-task { padding: 16px; }
+  .viewport-dialog .quiz-options { margin-top: 12px; gap: 8px; }
+  .viewport-dialog .quiz-option { padding: 10px 12px; gap: 8px; }
+  .viewport-dialog .quiz-feedback { margin-top: 12px; }
+  .viewport-dialog .station-nav { margin-top: 16px; }
+  .viewport-dialog .flow-detail { margin-top: 0; }
+  .viewport-dialog .issue-grid { margin: 0; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); }
+  .viewport-dialog .objective-card { width: 100%; }
+  .viewport-dialog textarea { min-height: 80px; height: 130px; resize: none; }
+  .viewport-task .reflection-prompt { margin-bottom: 8px; }
+  @media (max-width: 900px), (max-height: 740px) {
+    .station-viewport .station-heading .station-lede, .station-viewport .station-heading .objective-card { display: none; }
+    .station-viewport .station-heading { display: block; }
+    .station-viewport .header-inner { padding-top: 6px; padding-bottom: 6px; }
+    .station-viewport .stepper-wrap { padding-bottom: 6px; }
+  }
+  @media (max-width: 600px) {
+    .station-viewport .app-main { padding: 8px; }
+    .station-viewport .dialogue-panel { position: relative; left: auto; bottom: auto; width: auto; transform: none; margin: 0 10px 10px; padding: 20px 12px 10px; }
+    .station-viewport .story-stage { display: flex; flex-direction: column; justify-content: flex-end; }
+    .viewport-dialog-head, .viewport-dialog-nav { padding: 8px; }
+    .viewport-dialog-content { padding: 2px 8px; }
+    .viewport-dialog .quiz-card, .viewport-dialog .viewport-task { padding: 12px; }
+    .viewport-dialog .quiz-option { grid-template-columns: 36px minmax(0, 1fr) 22px; padding: 8px; }
+    .viewport-dialog .food-flow { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .viewport-dialog .flow-arrow { display: none; }
+    .viewport-dialog .issue-grid { display: flex; }
+    .viewport-dialog .issue-card { flex: 1; }
+  }
+  @media (max-height: 500px) and (min-width: 601px) {
+    .station-viewport .station-heading { display: none; }
+    .station-viewport .stepper-wrap { display: none; }
+    .viewport-dialog .quiz-options { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+}

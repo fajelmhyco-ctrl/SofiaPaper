@@ -42,6 +42,7 @@
     els.review.addEventListener('click', function () {
       const mount = document.getElementById('stage-1');
       if (!mount) return;
+      if (document.body.classList.contains('station-viewport')) return;
       mount.scrollIntoView({ behavior: window.App.prefersReducedMotion() ? 'auto' : 'smooth', block: 'start' });
     });
 

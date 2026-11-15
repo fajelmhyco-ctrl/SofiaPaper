@@ -39,6 +39,9 @@
       ? Boolean(options.isDone())
       : window.AppState.isDialogueDone(stationId);
     let currentScene = '';
+    let finishTimer = null;
+    let textPage = 0;
+    let textPages = [];
 
     mount.innerHTML = [
       '<div class="story-stage" data-dialogue-stage>',
@@ -124,6 +127,7 @@
     }
 
     function render() {
+      window.clearTimeout(finishTimer);
       const line = lines[index];
       if (!line) return;
 
@@ -160,12 +164,37 @@
       speakerEl.textContent = speakerName(speaker, characters);
       textEl.textContent = line.text;
 
+      // Keep a visible part of the scene on short screens without shrinking type.
+      // Long beats continue through the same Next/Back controls, word for word.
+      textPages = [line.text];
+      if (mount.offsetParent !== null && document.body.classList.contains('station-viewport')) {
+        const stageHeight = stage.clientHeight;
+        const chrome = panel.offsetHeight - textEl.offsetHeight;
+        const available = Math.max(50, stageHeight - Math.min(180, stageHeight * 0.4) - chrome - 22);
+        if (textEl.scrollHeight > available) {
+          textPages = [];
+          let words = [];
+          line.text.split(/\s+/).forEach(function (word) {
+            textEl.textContent = words.concat(word).join(' ');
+            if (words.length && textEl.scrollHeight > available) {
+              textPages.push(words.join(' '));
+              words = [];
+            }
+            words.push(word);
+          });
+          if (words.length) textPages.push(words.join(' '));
+        }
+      }
+      textPage = Math.min(textPage, textPages.length - 1);
+      textEl.textContent = textPages[textPage];
+
       countEl.textContent = (index + 1) + ' / ' + lines.length;
+      if (textPages.length > 1) countEl.textContent += ' · ' + (textPage + 1) + '/' + textPages.length;
       meterEl.style.width = (((index + 1) / lines.length) * 100) + '%';
 
-      prevBtn.disabled = index === 0;
+      prevBtn.disabled = index === 0 && textPage === 0;
 
-      if (index === lines.length - 1) {
+      if (index === lines.length - 1 && textPage === textPages.length - 1) {
         nextBtn.classList.add('is-finish');
         if (done) {
           nextLabel.textContent = options.completedLabel || 'Tapos na';
@@ -183,12 +212,19 @@
       panel.classList.remove('is-updating');
       void panel.offsetWidth;
       panel.classList.add('is-updating');
+      // Allow the final beat to be read, or use the existing finish button.
+      if (!done && index === lines.length - 1 && textPage === textPages.length - 1 && mount.offsetParent !== null) {
+        finishTimer = window.setTimeout(function () {
+          if (mount.offsetParent !== null && !document.querySelector('dialog[open]')) finish();
+        }, Math.max(3500, textPages[textPage].length * 45));
+      }
     }
 
     function goTo(nextIndex) {
       const target = U.clamp(Number(nextIndex) || 0, 0, lines.length - 1);
       if (target === index) return;
       index = target;
+      textPage = 0;
       if (typeof options.setIndex === 'function') options.setIndex(index);
       else window.AppState.setDialogueIndex(stationId, index);
       render();
@@ -207,6 +243,7 @@
     }
 
     function next() {
+      if (textPage < textPages.length - 1) { textPage++; render(); return; }
       if (index >= lines.length - 1) {
         finish();
         return;
@@ -215,6 +252,7 @@
     }
 
     function prev() {
+      if (textPage > 0) { textPage--; render(); return; }
       if (index <= 0) return;
       goTo(index - 1);
     }
@@ -235,6 +273,7 @@
     }
 
     document.addEventListener('keydown', onKeydown);
+    window.addEventListener('resize', function () { if (mount.offsetParent !== null) render(); });
 
     render();
 

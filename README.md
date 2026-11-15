@@ -4,7 +4,7 @@
 
 Isang station-based, interactive na aralin sa Filipino 7 tungkol sa awiting-bayang “Magtanim ay 'Di Biro,” karanasan ng mga magsasaka, at mga kontemporaryong isyung panlipunan.
 
-Ang app ay isang static na website — walang build step at walang backend. Gumagana ito sa browser at kusang nagse-save ng progreso sa `localStorage`.
+Ang app ay isang static na website na walang build step. Lokal na sine-save ang progreso at ipinapadala ang mga sagot sa Supabase. Para sa eksaktong SQL at admin setup, sundin ang [Supabase setup](supabase/SETUP.md).
 
 ---
 
@@ -35,7 +35,7 @@ Sa mode na ito, binabasa ang canonical na `data/storyData.json`.
 ### Kinakailangan
 
 - Isang modernong browser (Chrome, Edge, Firefox, Safari).
-- Hindi kailangan ng internet. Kung walang access sa Google Fonts, gagamit ang app ng local fallback fonts.
+- Kailangan ng internet para sa online submissions at admin dashboard. Kapag offline, naka-queue ang mga sagot sa browser at muling ipapadala kapag nakakonekta. Kung walang access sa Google Fonts, gagamit ang app ng local fallback fonts.
 - Node.js ay kailangan lamang kung i-e-edit ang nilalaman at i-regenerate ang offline data mirror.
 
 ---
@@ -52,14 +52,16 @@ Sa mode na ito, binabasa ang canonical na `data/storyData.json`.
 
 Sunod-sunod na nagbubukas ang mga istasyon. Ang bawat isa ay may sariling completion condition:
 
-- **Bago ang Station 1:** matapos ang lahat ng larawang kuwento.
-- **Station 1:** masagutan ang limang tanong.
+- **Simula:** diretso sa istasyon; wala nang hiwalay na full-story intro.
+- **Station 1:** matapos ang kuwento sa istasyon at masagutan ang limang tanong.
 - **Station 2:** mabuksan ang limang pagsusuri at masagutan ang limang tanong.
-- **Station 3:** masagutan ang limang tanong.
-- **Station 4:** may napiling isyu, may OO/HINDI na sagot, may paliwanag na 40+ karakter, at nasagutan ang limang tanong.
+- **Station 3:** matapos ang kuwento sa istasyon at masagutan ang limang tanong.
+- **Station 4:** matapos ang kuwento, may napiling isyu, may OO/HINDI na sagot, may paliwanag na 40+ karakter, at nasagutan ang limang tanong.
 - **Station 5:** masagutan ang huling limang tanong; dito rin ang print/save ng report.
 
 Maaaring balikan ang mga nakaraang istasyon gamit ang stepper sa itaas.
+
+Sa Stations 1, 3, at 4, kasya sa viewport ang tagpo. Lumalabas ang mga tanong matapos ang huling story beat, gamit ang finish button o matapos ang reading timer. Sa maliit na screen, pinapahina ang mahahabang teksto at gawain sa halip na paliitin ang font o mag-scroll. Hindi binabago ang mga salita, larawan, o pagkakasunod ng kuwento.
 
 ---
 
@@ -178,9 +180,9 @@ Maaari ring gamitin ang `Ctrl + P` / `Cmd + P`; awtomatikong binubuo ng app ang 
 ## Progreso at Privacy
 
 - Naka-save ang progreso sa browser sa ilalim ng key na `dalumAwit.state.v1`.
-- Naka-save ang kasaysayan ng mga pagtatangka sa `dalumAwit.submissions.v1` at makikita sa direktang URL na `admin.html`.
-- Hindi kailangan ng account at walang data na ipinapadala sa server.
-- Ang mga sagot ay nananatili lamang sa device/browser na ginamit.
+- May lokal na recovery history sa `dalumAwit.submissions.v1` at pending submissions sa `dalumAwit.onlineQueue.v1`.
+- Awtomatikong gumagamit ng anonymous Supabase sign-in ang mag-aaral. Ipinapadala online ang identifier/pangalan, station, tanong, sagot, at oras.
+- Ang `admin.html` ay nangangailangan ng awtorisadong admin account at nagpapakita ng online na sagot mula sa lahat ng device, na may Edit/Delete sa bawat entry. Tingnan ang [setup at permissions](supabase/SETUP.md).
 - Ang **reset button** sa header ay nagbubura ng kasalukuyang progreso ngunit pinananatili ang naitalang attempt para sa dashboard. Mag-reload ang pahina at babalik sa landing page.
 - Kung gagamit ng shared classroom computer, pindutin ang reset bago magsimula ang susunod na mag-aaral.
 

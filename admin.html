@@ -12,19 +12,33 @@
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/admin.css">
 </head>
-<body>
+<body data-admin="true">
   <header class="admin-header">
     <div class="admin-header-inner">
       <div>
         <p class="admin-brand">DALUM-AWIT</p>
         <h1>Research Results</h1>
-        <p class="admin-lede">Mga naitalang sagot at datos ng mag-aaral sa browser na ito.</p>
+        <p class="admin-lede">Mga sagot ng mag-aaral mula sa online database, kusang nag-a-update.</p>
       </div>
-      <span class="storage-chip"><span aria-hidden="true"></span>Lokal na datos</span>
+      <span class="storage-chip" id="connectionStatus" role="status">Hindi nakakonekta</span>
     </div>
   </header>
 
   <main class="admin-main">
+    <section class="admin-panel" id="adminAuth" aria-labelledby="adminLoginTitle">
+      <h2 id="adminLoginTitle">Admin sign-in</h2>
+      <form id="adminLogin" class="table-tools">
+        <label><span>Email</span><input type="email" id="adminEmail" autocomplete="username" required></label>
+        <label><span>Password</span><input type="password" id="adminPassword" autocomplete="current-password" required></label>
+        <button class="admin-button" type="submit">Mag-sign in</button>
+      </form>
+    </section>
+    <p id="adminMessage" role="status" aria-live="polite"></p>
+    <div id="adminDashboard" hidden>
+    <div class="export-actions admin-session-actions">
+      <button class="admin-button" id="addAnswer" type="button">Magdagdag ng sagot</button>
+      <button class="admin-button admin-button-secondary" id="adminLogout" type="button">Mag-sign out</button>
+    </div>
     <section class="metrics" aria-label="Buod ng mga resulta">
       <article class="metric"><span>Mga tala</span><strong id="metricTotal">0</strong><small>Lahat ng pagtatangka</small></article>
       <article class="metric"><span>Naisumite</span><strong id="metricSubmitted">0</strong><small>Kumpletong 25 tanong</small></article>
@@ -40,6 +54,16 @@
         </div>
       </div>
       <div class="station-results" id="stationResults"></div>
+    </section>
+
+    <section class="admin-panel" aria-labelledby="answersTitle">
+      <div class="panel-heading"><div><h2 id="answersTitle">Lahat ng sagot</h2><p>Mga sagot mula sa lahat ng device. I-edit o tanggalin ang isang entry.</p></div></div>
+      <div class="table-tools">
+        <label><span>Hanapin ang sagot</span><input id="answerSearch" type="search" placeholder="Pangalan, identifier, tanong, o sagot"></label>
+        <label><span>Station</span><select id="answerStation"><option value="">Lahat</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></label>
+      </div>
+      <div class="table-wrap"><table><thead><tr><th>Mag-aaral / Identifier</th><th>Station</th><th>Tanong</th><th>Sagot</th><th>Oras ng pagsagot</th><th>Aksyon</th></tr></thead><tbody id="answersBody"></tbody></table></div>
+      <div class="table-tools"><button class="admin-button admin-button-secondary" id="answersPrevious" type="button">Bumalik</button><span id="answersPage" role="status"></span><button class="admin-button admin-button-secondary" id="answersNext" type="button">Susunod</button></div>
     </section>
 
     <section class="admin-panel" aria-labelledby="submissionsTitle">
@@ -89,11 +113,12 @@
 
       <div class="empty-results" id="emptyResults" hidden>
         <h3>Wala pang naitalang sagot</h3>
-        <p>Lalabas dito ang datos kapag nagsimula nang sumagot ang mga mag-aaral gamit ang parehong browser at site address.</p>
+        <p>Lalabas dito ang mga sagot kapag naisumite online ng mga mag-aaral.</p>
       </div>
     </section>
 
-    <p class="privacy-note">Ang dashboard na ito ay gumagamit ng <code>localStorage</code>. Ang datos ay makikita lamang sa parehong browser, device, at site origin kung saan sinagutan ang activity.</p>
+    <p class="privacy-note">Ang mga tala ay mula sa Supabase. Tanging awtorisadong admin ang maaaring tumingin, magdagdag, mag-edit, at magtanggal ng mga sagot.</p>
+    </div>
   </main>
 
   <dialog class="result-dialog" id="resultDialog" aria-labelledby="resultDialogTitle">
@@ -107,7 +132,26 @@
     <div class="result-dialog-body" id="resultDialogBody"></div>
   </dialog>
 
+  <dialog class="result-dialog" id="answerEditor" aria-labelledby="answerEditorTitle">
+    <form id="answerForm">
+      <div class="result-dialog-head"><h2 id="answerEditorTitle">I-edit ang sagot</h2><button class="dialog-close" type="button" id="cancelAnswer" aria-label="Isara">×</button></div>
+      <div class="result-dialog-body answer-fields">
+        <label>Attempt ID<input id="editAttempt" required maxlength="150"></label>
+        <label>Pangalan<input id="editName" maxlength="80"></label>
+        <label>Seksyon<input id="editSection" maxlength="60"></label>
+        <label>Station<select id="editStation"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></label>
+        <label>Tanong<select id="editQuestion" required></select></label>
+        <label id="editOptionLabel">Sagot<select id="editOption"></select></label>
+        <label id="editTextLabel" hidden>Paliwanag<textarea id="editText" rows="5" maxlength="4000"></textarea></label>
+        <label>Oras ng pagsagot<input id="editTimestamp" type="datetime-local" step="1" required></label>
+        <p id="editorMessage" role="status"></p>
+        <div class="export-actions"><button class="admin-button" id="saveAnswer" type="submit">I-save online</button></div>
+      </div>
+    </form>
+  </dialog>
   <script src="data/storyData.js"></script>
+  <script src="assets/js/database-config.js"></script>
+  <script src="assets/js/database.js"></script>
   <script src="assets/js/admin.js"></script>
 </body>
 </html>

@@ -1,22 +1,48 @@
 /* ============================================================
-   DALUM-AWIT · Standalone local admin dashboard
+   DALUM-AWIT · Authenticated online admin dashboard
    ============================================================ */
 (function () {
   'use strict';
 
-  const STORAGE_KEY = 'dalumAwit.submissions.v1';
   const story = window.DALUM_AWIT_DATA || { stations: [] };
+  const store = window.OnlineStore;
   let records = [];
-
+  let rows = [];
+  let channel;
+  let polling;
+  let refreshTimer;
+  let requestVersion = 0;
+  let detailId = null;
+  let editing = null;
+  let answerPage = 0;
   const els = {};
 
-  function readRecords() {
-    try {
-      const parsed = JSON.parse(window.localStorage.getItem(STORAGE_KEY) || '[]');
-      return Array.isArray(parsed) ? parsed : [];
-    } catch (error) {
-      return [];
-    }
+  function recordsFromRows(data) {
+    const groups = new Map();
+    data.forEach(row => {
+      if (!groups.has(row.attempt_id)) groups.set(row.attempt_id, []);
+      groups.get(row.attempt_id).push(row);
+    });
+    return Array.from(groups, ([id, answers]) => {
+      const latest = answers.slice().sort((a, b) => b.updated_at.localeCompare(a.updated_at))[0];
+      const responses = story.stations.flatMap(station => station.quiz.questions.map(question => {
+        const row = answers.find(answer => answer.question_id === question.id);
+        const correct = question.options.find(option => option.correct);
+        return { questionId: question.id, number: question.number, stationId: station.id,
+          question: question.question, selectedId: row ? row.selected_id : null,
+          selectedText: row ? row.selected_answer : '', correctId: correct.id,
+          correctText: correct.text, correct: row ? row.selected_id === correct.id : null,
+          answeredAt: row && row.answered_at, rowId: row && row.id };
+      }));
+      const answered = responses.filter(response => response.selectedId).length;
+      const score = responses.filter(response => response.correct).length;
+      return { id, student: { name: latest.student_name, section: latest.section }, responses,
+        answered, score, total: 25, percentage: Math.round(score / 25 * 100),
+        status: answered === 25 ? 'submitted' : 'in-progress',
+        startedAt: latest.started_at, updatedAt: latest.updated_at,
+        submittedAt: answered === 25 ? latest.answered_at : null,
+        extraAnswers: answers.filter(row => row.kind !== 'quiz') };
+    });
   }
 
   function formatDate(value) {
@@ -107,6 +133,7 @@
   }
 
   function openDetails(record) {
+    detailId = record.id;
     const studentName = text(record.student && record.student.name, 'Hindi pinangalanan');
     setText(els.dialogTitle, studentName);
     els.dialogBody.innerHTML = '';
@@ -181,11 +208,25 @@
       correct.innerHTML = '<b>Tamang sagot:</b> ';
       correct.appendChild(document.createTextNode(response.correctId ? response.correctId.toUpperCase() + '. ' + response.correctText : '—'));
       item.append(head, question, selected, correct);
+      if (response.rowId) item.append(answerControls(rows.find(row => row.id === response.rowId)));
+      const stamp = document.createElement('small');
+      stamp.textContent = formatDate(response.answeredAt);
+      item.append(stamp);
       list.appendChild(item);
+    });
+    (record.extraAnswers || []).forEach(row => {
+      const item = document.createElement('article');
+      item.className = 'response-item';
+      const title = document.createElement('h3');
+      title.textContent = 'Station ' + row.station + ' · ' + row.question;
+      const answer = document.createElement('p');
+      answer.textContent = (row.selected_id ? row.selected_id.toUpperCase() + ' — ' : '') + row.selected_answer;
+      item.append(title, answer, answerControls(row));
+      list.append(item);
     });
     els.dialogBody.appendChild(list);
 
-    if (typeof els.dialog.showModal === 'function') els.dialog.showModal();
+    if (typeof els.dialog.showModal === 'function' && !els.dialog.open) els.dialog.showModal();
     else els.dialog.setAttribute('open', '');
   }
 
@@ -225,7 +266,8 @@
   }
 
   function csvCell(value) {
-    return '"' + String(value == null ? '' : value).replace(/"/g, '""') + '"';
+    const safe = String(value == null ? '' : value).replace(/^[=+@\-]/, match => "'" + match);
+    return '"' + safe.replace(/"/g, '""') + '"';
   }
 
   function download(filename, content, type) {
@@ -266,11 +308,204 @@
     download('dalum-awit-results.json', JSON.stringify(records, null, 2), 'application/json;charset=utf-8');
   }
 
-  function refresh() {
-    records = readRecords();
-    renderMetrics();
-    renderStationResults();
-    renderTable();
+  async function refresh() {
+    const version = ++requestVersion;
+    try {
+      const data = await store.allAnswers();
+      if (version !== requestVersion) return;
+      rows = data;
+      records = recordsFromRows(rows);
+      renderMetrics(); renderStationResults(); renderTable(); renderAnswers();
+      if (detailId && els.dialog.open) {
+        const record = records.find(item => item.id === detailId);
+        if (record) openDetails(record);
+        else { els.dialog.close(); detailId = null; }
+      }
+    } catch (error) { message('Hindi ma-load ang online na sagot: ' + error.message); }
+  }
+  function message(value) { document.getElementById('adminMessage').textContent = value; }
+  function renderAnswers() {
+    const query = document.getElementById('answerSearch').value.trim().toLocaleLowerCase('fil');
+    const station = document.getElementById('answerStation').value;
+    const filtered = rows.filter(row => (!station || row.station === Number(station)) &&
+      (!query || [row.student_name, row.attempt_id, row.question, row.selected_answer].join(' ').toLocaleLowerCase('fil').includes(query)))
+      .sort((a, b) => b.answered_at.localeCompare(a.answered_at));
+    const pages = Math.max(1, Math.ceil(filtered.length / 50));
+    answerPage = Math.min(answerPage, pages - 1);
+    const body = document.getElementById('answersBody');
+    body.replaceChildren();
+    filtered.slice(answerPage * 50, answerPage * 50 + 50).forEach(row => {
+      const tr = document.createElement('tr');
+      const student = cell(row.student_name || 'Hindi pinangalanan');
+      const identifier = document.createElement('small');
+      identifier.className = 'answer-identifier';
+      identifier.textContent = row.attempt_id;
+      student.append(identifier);
+      const actions = document.createElement('td');
+      actions.append(answerControls(row));
+      tr.append(student, cell(row.station), cell(row.question),
+        cell((row.kind === 'reflection' ? row.selected_id.toUpperCase() + ' — ' : '') + row.selected_answer),
+        cell(formatDate(row.answered_at)), actions);
+      body.append(tr);
+    });
+    document.getElementById('answersPage').textContent = filtered.length + ' sagot · ' + (answerPage + 1) + ' / ' + pages;
+    document.getElementById('answersPrevious').disabled = answerPage === 0;
+    document.getElementById('answersNext').disabled = answerPage === pages - 1;
+  }
+  function answerControls(row) {
+    const controls = document.createElement('div');
+    controls.className = 'export-actions';
+    const edit = document.createElement('button');
+    edit.type = 'button'; edit.className = 'view-button'; edit.textContent = 'I-edit';
+    edit.addEventListener('click', () => editAnswer(row));
+    const remove = document.createElement('button');
+    remove.type = 'button'; remove.className = 'view-button'; remove.textContent = 'Tanggalin';
+    remove.addEventListener('click', async () => {
+      if (!window.confirm('Tanggalin ang sagot na ito sa online database?')) return;
+      remove.disabled = true;
+      try { await store.mutate('delete', row.id); await refresh(); }
+      catch (error) { message(error.message); window.alert(error.message); }
+      finally { remove.disabled = false; }
+    });
+    controls.append(edit, remove);
+    return controls;
+  }
+  function questionList(stationId) {
+    const station = story.stations.find(item => item.id === Number(stationId));
+    const list = station.quiz.questions.map(question => ({ ...question, kind: 'quiz' }));
+    if (Number(stationId) === 4) story.issues.forEach(issue => list.push({
+      id: 'issue-' + issue.id, kind: 'reflection', question: issue.question,
+      options: [{ id: 'oo', text: 'OO' }, { id: 'hindi', text: 'HINDI' }]
+    }));
+    if (Number(stationId) === 5) list.push({ id: 'insight', kind: 'insight', question: 'Ang pinakamahalagang natutuhan ko', options: [] });
+    return list;
+  }
+  function populateQuestions(selected) {
+    const select = document.getElementById('editQuestion');
+    select.replaceChildren();
+    questionList(document.getElementById('editStation').value).forEach(question => {
+      select.add(new Option(question.question, question.id));
+    });
+    if (selected) select.value = selected;
+    populateOptions();
+  }
+  function populateOptions() {
+    const question = questionList(document.getElementById('editStation').value)
+      .find(item => item.id === document.getElementById('editQuestion').value);
+    const options = document.getElementById('editOption');
+    options.replaceChildren();
+    question.options.forEach(option => options.add(new Option(option.text, option.id)));
+    document.getElementById('editOptionLabel').hidden = question.kind === 'insight';
+    document.getElementById('editTextLabel').hidden = question.kind === 'quiz';
+  }
+  function editAnswer(row) {
+    editing = row || null;
+    const field = (id, value) => { document.getElementById(id).value = value; };
+    document.getElementById('answerEditorTitle').textContent = row ? 'I-edit ang sagot' : 'Magdagdag ng sagot';
+    field('editAttempt', row ? row.attempt_id : crypto.randomUUID());
+    document.getElementById('editAttempt').readOnly = Boolean(row);
+    field('editName', row ? row.student_name : '');
+    field('editSection', row ? row.section : '');
+    field('editStation', row ? row.station : 1);
+    document.getElementById('editStation').disabled = Boolean(row);
+    document.getElementById('editQuestion').disabled = Boolean(row);
+    populateQuestions(row && row.question_id);
+    if (row) field('editOption', row.selected_id);
+    field('editText', row && row.kind !== 'quiz' ? row.selected_answer : '');
+    const date = new Date(row ? row.answered_at : Date.now());
+    field('editTimestamp', new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 19));
+    document.getElementById('editorMessage').textContent = '';
+    document.getElementById('answerEditor').showModal();
+  }
+  async function saveAnswer(event) {
+    event.preventDefault();
+    const field = id => document.getElementById(id).value;
+    const question = questionList(field('editStation')).find(item => item.id === field('editQuestion'));
+    const option = question.options.find(item => item.id === field('editOption'));
+    const values = {
+      attempt_id: field('editAttempt').trim(), student_name: field('editName').trim(), section: field('editSection').trim(),
+      station: Number(field('editStation')), question_id: question.id, question: question.question,
+      selected_id: option ? option.id : '', selected_answer: question.kind === 'quiz' ? option.text : field('editText'),
+      kind: question.kind, answered_at: new Date(field('editTimestamp')).toISOString(), admin_edited: true
+    };
+    const save = document.getElementById('saveAnswer');
+    save.disabled = true;
+    try {
+      if (!editing) {
+        const existing = rows.find(row => row.attempt_id === values.attempt_id);
+        if (existing) { values.user_id = existing.user_id; values.started_at = existing.started_at; }
+      }
+      await store.mutate(editing ? 'update' : 'create', editing && editing.id, values);
+      document.getElementById('answerEditor').close();
+      message('Nai-save online ang sagot.');
+      await refresh();
+    } catch (error) { document.getElementById('editorMessage').textContent = error.message; }
+    finally { save.disabled = false; }
+  }
+  async function stopLive() {
+    clearInterval(polling); clearTimeout(refreshTimer); ++requestVersion;
+    if (channel) { const db = await store.client(); await db.removeChannel(channel); channel = null; }
+  }
+  async function connect() {
+    if (!store.configured()) {
+      message('Hindi pa nakakonekta ang Supabase. Kumpletuhin ang supabase/SETUP.md at assets/js/database-config.js.');
+      document.getElementById('adminLogin').querySelector('button').disabled = true;
+      return;
+    }
+    const user = await store.adminSession();
+    if (!user) return;
+    document.getElementById('adminAuth').hidden = true;
+    document.getElementById('adminDashboard').hidden = false;
+    await stopLive();
+    const db = await store.client();
+    channel = db.channel('admin-answers').on('postgres_changes', {
+      event: '*', schema: 'public', table: 'student_answers'
+    }, () => { clearTimeout(refreshTimer); refreshTimer = setTimeout(refresh, 100); }).subscribe(state => {
+      document.getElementById('connectionStatus').textContent = state === 'SUBSCRIBED' ? 'Live ? Online' : 'Kumokonekta muli';
+      if (state === 'SUBSCRIBED') refresh();
+    });
+    polling = setInterval(refresh, 15000);
+    message('');
+    await refresh();
+  }
+  function bindOnline() {
+    document.getElementById('adminLogin').addEventListener('submit', async event => {
+      event.preventDefault();
+      const submit = event.target.querySelector('button'); submit.disabled = true;
+      try {
+        const db = await store.client();
+        const result = await db.auth.signInWithPassword({
+          email: document.getElementById('adminEmail').value.trim(), password: document.getElementById('adminPassword').value
+        });
+        if (result.error) throw result.error;
+        document.getElementById('adminPassword').value = '';
+        if (!await store.adminSession()) { await db.auth.signOut(); throw new Error('Walang admin access ang account na ito.'); }
+        await connect();
+      } catch (error) { message(error.message); }
+      finally { submit.disabled = false; }
+    });
+    document.getElementById('adminLogout').addEventListener('click', async () => {
+      try {
+        await stopLive();
+        const db = await store.client(); await db.auth.signOut();
+        rows = []; records = []; detailId = null;
+        document.querySelectorAll('dialog[open]').forEach(dialog => dialog.close());
+        els.dialogBody.replaceChildren(); renderMetrics(); renderStationResults(); renderTable(); renderAnswers();
+        document.getElementById('adminDashboard').hidden = true;
+        document.getElementById('adminAuth').hidden = false;
+        document.getElementById('connectionStatus').textContent = 'Hindi nakakonekta';
+        message('');
+      } catch (error) { message(error.message); }
+    });
+    document.getElementById('addAnswer').addEventListener('click', () => editAnswer(null));
+    document.getElementById('editStation').addEventListener('change', () => populateQuestions());
+    document.getElementById('editQuestion').addEventListener('change', populateOptions);
+    document.getElementById('cancelAnswer').addEventListener('click', () => document.getElementById('answerEditor').close());
+    document.getElementById('answerForm').addEventListener('submit', saveAnswer);
+    ['answerSearch', 'answerStation'].forEach(id => document.getElementById(id).addEventListener('input', () => { answerPage = 0; renderAnswers(); }));
+    document.getElementById('answersPrevious').addEventListener('click', () => { answerPage--; renderAnswers(); });
+    document.getElementById('answersNext').addEventListener('click', () => { answerPage++; renderAnswers(); });
+    connect().catch(error => message(error.message));
   }
 
   function init() {
@@ -296,17 +531,14 @@
     els.exportCsv.addEventListener('click', exportCsv);
     els.exportJson.addEventListener('click', exportJson);
     document.getElementById('closeResultDialog').addEventListener('click', function () {
+      detailId = null;
       if (typeof els.dialog.close === 'function') els.dialog.close();
       else els.dialog.removeAttribute('open');
     });
     els.dialog.addEventListener('click', function (event) {
       if (event.target === els.dialog && typeof els.dialog.close === 'function') els.dialog.close();
     });
-    window.addEventListener('storage', function (event) {
-      if (event.key === STORAGE_KEY) refresh();
-    });
-
-    refresh();
+    bindOnline();
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);

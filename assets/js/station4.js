@@ -150,7 +150,7 @@
     syncSelection();
     renderWorkspace(issue);
 
-    if (shouldScroll) {
+    if (shouldScroll && !document.body.classList.contains('station-viewport')) {
       window.setTimeout(function () {
         els.workspace.scrollIntoView({
           behavior: window.App.prefersReducedMotion() ? 'auto' : 'smooth',
@@ -205,7 +205,7 @@
 
   function reveal(shouldScroll) {
     setActivityVisible(true);
-    if (shouldScroll) {
+    if (shouldScroll && !document.body.classList.contains('station-viewport')) {
       window.setTimeout(function () {
         els.activity.scrollIntoView({
           behavior: window.App.prefersReducedMotion() ? 'auto' : 'smooth',

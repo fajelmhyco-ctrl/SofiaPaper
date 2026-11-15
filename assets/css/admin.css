@@ -378,3 +378,17 @@ tbody tr:hover { background: rgba(232, 240, 231, 0.48); }
   .detail-meta { grid-template-columns: 1fr; }
   .result-dialog-body { padding: 16px; }
 }
+
+/* Online admin controls reuse the dashboard palette and controls. */
+[hidden] { display: none !important; }
+.admin-session-actions { margin-bottom: 20px; }
+.answer-fields { display: grid; gap: 14px; }
+.answer-fields label { display: grid; gap: 6px; }
+.answer-fields input, .answer-fields select, .answer-fields textarea {
+  width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px;
+  background: var(--card); color: var(--ink); font: inherit;
+}
+.response-item .export-actions { margin: 12px 0; }
+.answer-identifier { display: block; overflow-wrap: anywhere; color: var(--muted); }
+#answersBody td { min-width: 110px; white-space: normal; }
+#answersBody td:nth-child(3), #answersBody td:nth-child(4) { min-width: 220px; }

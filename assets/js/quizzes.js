@@ -179,7 +179,7 @@
       const newlySubmitted = window.AppState.markAssessmentSubmitted();
       if (window.ResultsStore) window.ResultsStore.syncNow(story, window.AppState.getState());
       if (newlySubmitted && window.App) {
-        window.App.showToast('Naisumite na ang lahat ng iyong sagot. Mahusay!');
+        window.App.showToast('Kumpleto na ang lahat ng iyong sagot. Mahusay!');
       }
     } else if (isStationComplete(question.stationId) && window.App) {
       window.App.showToast('Nasagutan mo na ang lahat ng tanong sa istasyong ito.');

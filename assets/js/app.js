@@ -9,7 +9,6 @@
   let story = null;
   let modules = {};
   let engines = {};
-  let pictureEngine = null;
   let dialoguesInitialized = false;
   let appEntered = false;
   let activeStation = 1;
@@ -227,7 +226,7 @@
     if (stationId === 4) {
       if (!state.station4.issue) return false;
       const answer = window.AppState.getAnswer(state.station4.issue);
-      return Boolean(answer.decision) &&
+      return window.AppState.isDialogueDone(4) && Boolean(answer.decision) &&
         String(answer.reflection || '').trim().length >= 40 &&
         window.QuizManager.isStationComplete(4);
     }
@@ -244,7 +243,7 @@
   }
 
   function showStation(stationId, options) {
-    if (!story) return false;
+    if (!story || !appEntered) return false;
 
     const opts = options || {};
     const id = U.clamp(Number(stationId) || 1, 1, 5);
@@ -277,6 +276,9 @@
       module.onShow();
     }
 
+    window.StationViewport.show(id);
+    if (engines[id]) engines[id].refresh();
+
     if (opts.scroll !== false) {
       window.scrollTo({
         top: 0,
@@ -302,15 +304,8 @@
       module.onShow();
     }
 
-    const activity = document.getElementById('station' + stationId + 'Activity');
-    if (activity && !activity.hidden) {
-      window.setTimeout(function () {
-        activity.scrollIntoView({
-          behavior: App.prefersReducedMotion() ? 'auto' : 'smooth',
-          block: 'start'
-        });
-      }, 180);
-    }
+    window.StationViewport.complete(stationId);
+
   }
 
   /* ------------------------------------------------------------
@@ -360,145 +355,16 @@
   }
 
   /* ------------------------------------------------------------
-     Landing, audio, and required picture-slide gate
+     Landing, audio, and direct station entry
      ------------------------------------------------------------ */
-  function pictureSlideLines() {
-    const lines = [];
-
-    story.stations.forEach(function (station) {
-      if (Array.isArray(station.dialogue) && station.dialogue.length) {
-        station.dialogue.forEach(function (line) {
-          lines.push(Object.assign({}, line));
-        });
-        return;
-      }
-
-      if (station.id === 2 && station.lesson) {
-        lines.push({
-          speaker: 'narrator',
-          text: station.lesson.intro,
-          scene: station.scene || 'field-afternoon',
-          mutya: 'nakatayo',
-          isko: 'nagsasalita'
-        });
-      }
-
-      if (station.id === 5) {
-        if (station.opening) {
-          lines.push({
-            speaker: 'narrator',
-            text: station.opening,
-            scene: station.scene || 'dawn',
-            mutya: 'nakatayo'
-          });
-        }
-        if (station.banner && station.banner.quote) {
-          lines.push({
-            speaker: 'mutya',
-            text: station.banner.quote,
-            scene: station.scene || 'dawn',
-            mutya: 'nagsasalita'
-          });
-        }
-      }
-    });
-
-    return lines;
-  }
-
-  function markStationStoriesViewed() {
-    story.stations.forEach(function (station) {
-      if (!Array.isArray(station.dialogue) || !station.dialogue.length) return;
-      window.AppState.setDialogueIndex(station.id, station.dialogue.length - 1);
-      if (!window.AppState.isDialogueDone(station.id)) {
-        window.AppState.markDialogueDone(station.id);
-      }
-    });
-  }
-
   function enterStudentApp(options) {
-    const opts = options || {};
-    if (!window.AppState.isPictureSlidesComplete()) return;
     if (appEntered) return;
-
-    markStationStoriesViewed();
-
     const landing = document.getElementById('landingScreen');
-    const slides = document.getElementById('pictureSlidesScreen');
     if (landing) landing.hidden = true;
-    if (slides) slides.hidden = true;
-    document.body.classList.remove('is-landing', 'is-slides');
-
+    document.body.classList.remove('is-landing');
     appEntered = true;
     initDialogues();
-
-    const saved = window.AppState.getState();
-    showStation(saved.currentStation || 1, {
-      scroll: opts.fromSlides ? false : opts.scroll,
-      focus: opts.fromSlides ? false : opts.focus
-    });
-    refreshStepper();
-
-    if (opts.fromSlides) {
-      window.setTimeout(function () {
-        const questionSection = document.getElementById('station1Quiz') || document.getElementById('station1Activity');
-        if (questionSection) {
-          questionSection.scrollIntoView({
-            behavior: App.prefersReducedMotion() ? 'auto' : 'smooth',
-            block: 'start'
-          });
-          const firstQuestion = questionSection.querySelector('h2');
-          if (firstQuestion) {
-            firstQuestion.setAttribute('tabindex', '-1');
-            firstQuestion.focus({ preventScroll: true });
-          }
-        }
-      }, 120);
-    }
-  }
-
-  function completePictureSlides() {
-    window.AppState.completePictureSlides();
-    markStationStoriesViewed();
-    enterStudentApp({ fromSlides: true });
-  }
-
-  function showPictureSlides() {
-    const landing = document.getElementById('landingScreen');
-    const slides = document.getElementById('pictureSlidesScreen');
-    if (landing) landing.hidden = true;
-    if (slides) slides.hidden = false;
-    document.body.classList.remove('is-landing');
-    document.body.classList.add('is-slides');
-
-    if (!pictureEngine) {
-      pictureEngine = window.DialogueEngine.create(document.getElementById('pictureSlidesMount'), {
-        station: {
-          id: 'picture-slides',
-          scene: 'field-morning',
-          dialogue: pictureSlideLines()
-        },
-        characters: story.characters,
-        ariaLabel: 'Sunod-sunod na larawang kuwento',
-        finishLabel: 'Pumunta sa mga tanong',
-        completedLabel: 'Napanood na',
-        getSavedIndex: function () {
-          return window.AppState.getState().pictureSlides.index;
-        },
-        setIndex: function (index) {
-          window.AppState.setPictureSlideIndex(index);
-        },
-        isDone: function () {
-          return window.AppState.isPictureSlidesComplete();
-        },
-        markDone: function () {
-          window.AppState.completePictureSlides();
-        },
-        onComplete: completePictureSlides
-      });
-    }
-
-    window.scrollTo({ top: 0, behavior: 'auto' });
+    showStation(window.AppState.getState().currentStation || 1, options || {});
   }
 
   function startAudio() {
@@ -519,11 +385,7 @@
     startButton.disabled = false;
     startButton.addEventListener('click', function () {
       startAudio();
-      if (window.AppState.isPictureSlidesComplete()) {
-        enterStudentApp({ scroll: false, focus: false });
-      } else {
-        showPictureSlides();
-      }
+      enterStudentApp({ scroll: false, focus: false });
     });
   }
 
@@ -531,6 +393,21 @@
     if (!window.ResultsStore) return;
     window.AppState.subscribe(function (state) {
       window.ResultsStore.syncSoon(story, state);
+      window.OnlineStore.capture(story, state);
+    });
+    window.OnlineStore.capture(story, window.AppState.getState());
+    document.addEventListener('dalum:sync-status', function (event) {
+      const indicator = document.getElementById('answerSyncStatus');
+      indicator.textContent = event.detail.state === 'saved' ? 'Nai-save online' : event.detail.state === 'syncing' ? 'Ipinapadala...' : 'Sa device muna';
+      indicator.title = event.detail.message;
+      if (event.detail.state === 'error') {
+        indicator.textContent = 'Hindi nai-save';
+        App.showToast(event.detail.message, 6000);
+      }
+      if (event.detail.state === 'pending' && indicator.dataset.notice !== window.AppState.getState().attemptId) {
+        indicator.dataset.notice = window.AppState.getState().attemptId;
+        App.showToast('Naka-save sa device ang sagot; hinihintay pa ang online database.', 5000);
+      }
     });
     window.addEventListener('pagehide', function () {
       window.ResultsStore.syncNow(story, window.AppState.getState());
@@ -644,6 +521,7 @@
     buildStepper();
     window.QuizManager.init(story);
     initModules();
+    window.StationViewport.init(story);
     preloadImages();
     bindGlobalUI();
     bindResultsSync();
