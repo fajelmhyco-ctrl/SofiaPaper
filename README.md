@@ -48,7 +48,7 @@ Sa mode na ito, binabasa ang canonical na `data/storyData.json`.
 | 2 | Ang Awit ng mga Magsasaka | Pagsusuri ng limang linya ng awit at mga tanong 6–10. |
 | 3 | Kung Ano ang Nasa Likod ng Awit | Interactive na daloy ng pagkain at mga tanong 11–15. |
 | 4 | Pag-uwi ni Mutya | Pagsusuri ng isyung panlipunan at mga tanong 16–20. |
-| 5 | Ang Natutuhan ni Mutya | Mga tanong 21–25, synthesis, at printable na ulat. |
+| 5 | Ang Natutuhan ni Mutya | Mga tanong 21–25, synthesis, at pagsusumite ng ulat. |
 
 Sunod-sunod na nagbubukas ang mga istasyon. Ang bawat isa ay may sariling completion condition:
 
@@ -57,7 +57,7 @@ Sunod-sunod na nagbubukas ang mga istasyon. Ang bawat isa ay may sariling comple
 - **Station 2:** mabuksan ang limang pagsusuri at masagutan ang limang tanong.
 - **Station 3:** matapos ang kuwento sa istasyon at masagutan ang limang tanong.
 - **Station 4:** matapos ang kuwento, may napiling isyu, may OO/HINDI na sagot, may paliwanag na 40+ karakter, at nasagutan ang limang tanong.
-- **Station 5:** masagutan ang huling limang tanong; dito rin ang print/save ng report.
+- **Station 5:** masagutan ang huling limang tanong; dito rin ang pag-submit ng report.
 
 Maaaring balikan ang mga nakaraang istasyon gamit ang stepper sa itaas.
 
@@ -75,7 +75,7 @@ Sofia's Thesis/
 ├─ README.md
 ├─ assets/
 │  ├─ css/
-│  │  ├─ main.css             ← design system, responsive layout, print styles
+│  │  ├─ main.css             ← design system, responsive layout, thank-you screen
 │  │  └─ admin.css            ← isolated admin dashboard styles
 │  ├─ images/
 │  │  ├─ favicon.svg
@@ -97,7 +97,7 @@ Sofia's Thesis/
 │     ├─ station2.js          ← lyric analysis accordion
 │     ├─ station3.js          ← food-security flowchart
 │     ├─ station4.js          ← issue selection, OO/HINDI, reflection
-│     ├─ station5.js          ← synthesis, summary, printable report
+│     ├─ station5.js          ← synthesis, summary, submission at thank-you screen
 │     └─ app.js               ← router, stepper, dialogs, data loading
 ├─ data/
 │  ├─ storyData.json          ← canonical content source
@@ -155,25 +155,14 @@ Ang bawat dialogue line ay may:
 
 ---
 
-## Pag-save at Pag-print ng Ulat
+## Pag-submit ng Ulat
 
 1. Tapusin ang Station 4.
 2. Pumunta sa Station 5.
 3. Isulat ang pangalan, baitang/seksyon, at “Ang pinakamahalagang natutuhan ko.”
-4. Pindutin ang **I-print / I-save**.
+4. Pindutin ang **Submit**.
 
-Sa print dialog ng browser, piliin ang **Save as PDF** upang makakuha ng A4 na ulat. Karaniwang dalawang pahina ang output at may kasamang:
-
-- Pangalan, baitang/seksyon, petsa, at guro
-- Napiling isyung panlipunan at ang tanong
-- Sagot na OO/HINDI at ang paliwanag ng mag-aaral
-- Ang natutuhan ng mag-aaral
-- Sintesis na `AWIT → GAWAIN → KARANASAN NG MAGSASAKA → MGA ISYUNG PANLIPUNAN`
-- Mga layunin ng bawat istasyon
-- Deklarasyon at lagda ng mag-aaral at guro
-- Footer ng DALUM-AWIT
-
-Maaari ring gamitin ang `Ctrl + P` / `Cmd + P`; awtomatikong binubuo ng app ang print-only na ulat bago mag-print.
+Agad na ipinapadala ng app ang lahat ng sagot sa Supabase at sa admin dashboard. Kapag nakumpirma na ang lahat ng record, lumalabas ang Thank You screen. Kung offline o pansamantalang hindi maabot ang database, mananatili ang mga sagot sa offline retry queue at awtomatikong ipapadala kapag bumalik ang koneksyon; pagkatapos ng matagumpay na sync, lalabas din ang Thank You screen.
 
 ---
 
@@ -211,9 +200,9 @@ Maaari ring gamitin ang `Ctrl + P` / `Cmd + P`; awtomatikong binubuo ng app ang 
 **Nawala ang progreso**
 - Naka-clear ang browser storage, gumamit ng private/incognito window, o ibang browser ang ginamit. Bahagi ito ng inaasahang behavior ng LocalStorage.
 
-**Hindi lumalabas nang maayos ang print**
-- Sa print dialog, i-enable ang **Background graphics** kung nais makita ang light green/gold accents.
-- Piliin ang A4 at default margins.
+**Hindi pa lumalabas ang Thank You screen pagkatapos ng Submit**
+- Tiyaking nakakonekta sa internet at kumpleto ang Supabase setup sa `supabase/SETUP.md`.
+- Naka-queue muna ang mga sagot sa browser kapag offline; awtomatikong ipapadala ang mga ito kapag bumalik ang koneksyon.
 
 ---
 

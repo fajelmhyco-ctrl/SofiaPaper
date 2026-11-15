@@ -541,7 +541,7 @@
       "title": "Ang Natutuhan ni Mutya",
       "stepLabel": "Sintesis",
       "lede": "Pagsamahin ang lahat ng natutuhan: mula sa awit, tungo sa gawain, karanasan, at mga isyung panlipunan.",
-      "objective": "Mabuo ang sintesis ng paglalakbay at makabuo ng ulat ng mag-aaral na maaaring i-print o i-save para sa guro.",
+      "objective": "Mabuo ang sintesis ng paglalakbay at makabuo ng ulat ng mag-aaral na maaaring isumite sa guro.",
       "scene": "dawn",
       "banner": {
         "quote": "Hindi pala biro ang pagtatanim. At hindi rin biro ang kuwentong dala ng isang awit.",
@@ -739,6 +739,6 @@
   ],
   "summary": {
     "title": "Ulat ng Mag-aaral",
-    "intro": "Ito ang iyong ulat. Maaari mo itong i-print o i-save bilang PDF para sa iyong guro."
+    "intro": "Ito ang iyong ulat. Kapag handa ka na, pindutin ang Submit upang maipadala ang iyong mga sagot sa iyong guro."
   }
 }

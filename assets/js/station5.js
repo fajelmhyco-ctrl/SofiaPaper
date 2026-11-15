@@ -1,5 +1,5 @@
 /* ============================================================
-   DALUM-AWIT · Station 5 — synthesis, summary, printable report
+   DALUM-AWIT · Station 5 — synthesis, summary, submission
    ============================================================ */
 (function () {
   'use strict';
@@ -11,6 +11,8 @@
   let issues = [];
   let synthesis = [];
   let els = {};
+  let submitting = false;
+  let submissionRequested = false;
 
   function selectedIssue() {
     const issueId = window.AppState.getState().station4.issue;
@@ -115,110 +117,89 @@
     els.editBtn.innerHTML = '<svg class="icon" aria-hidden="true"><use href="#i-edit"></use></svg>' + U.escapeHtml(editLabel);
   }
 
-  function blankLine() {
-    return '<span class="print-blank-line" aria-hidden="true"></span>';
+  function setSubmitBusy(busy) {
+    els.submitBtn.disabled = busy;
+    els.submitBtn.setAttribute('aria-busy', String(busy));
+    els.submitBtn.innerHTML = '<svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg>' +
+      (busy ? 'Ipinapadala…' : 'Submit');
   }
 
-  function buildPrintReport() {
+  function showThankYou() {
     const state = window.AppState.getState();
-    const issue = selectedIssue();
-    const answer = selectedAnswer();
-    const reflection = String(answer.reflection || '').trim();
-    const insight = String(state.finalInsight || '').trim();
     const name = String(state.student.name || '').trim();
     const section = String(state.student.section || '').trim();
-    const today = U.formatDate(new Date());
-    const decision = answer.decision === 'oo' ? 'OO' : answer.decision === 'hindi' ? 'HINDI' : '—';
+    const submittedAt = state.finalSubmissionAt || new Date().toISOString();
 
-    const stationList = story.stations.map(function (item) {
-      return '<li><strong>Station ' + item.id + ' — ' + U.escapeHtml(item.title) + ':</strong> ' + U.escapeHtml(item.objective) + '</li>';
-    }).join('');
+    els.thankYouName.textContent = name || 'mag-aaral';
+    els.thankYouSection.textContent = section || '—';
+    els.thankYouDate.textContent = U.formatDate(submittedAt);
 
-    const chain = synthesis.map(function (node) {
-      return '<span>' + U.escapeHtml(node.label) + '</span>';
-    }).join('<span class="print-chain-arrow" aria-hidden="true">→</span>');
+    Array.prototype.forEach.call(els.station.children, function (child) {
+      child.hidden = child !== els.thankYou;
+    });
+    els.thankYou.hidden = false;
 
-    els.print.innerHTML = [
-      '<div class="print-sheet">',
-      '  <header class="print-head">',
-      '    <div class="print-brand">',
-      '      <span class="print-brand-mark" aria-hidden="true"><svg class="icon"><use href="#i-rice"></use></svg></span>',
-      '      <div>',
-      '        <p class="print-kicker">' + U.escapeHtml((story.meta && story.meta.grade ? story.meta.grade : 'Baitang 7') + ' · ' + (story.meta && story.meta.subject ? story.meta.subject : 'Filipino')) + '</p>',
-      '        <h1>DALUM-AWIT</h1>',
-      '        <p class="print-subtitle">Ang Paglalakbay ni Mutya: Sa Bukid ng mga Kuwento</p>',
-      '      </div>',
-      '    </div>',
-      '    <p class="print-doc-type">Ulat ng Mag-aaral</p>',
-      '  </header>',
-      '  <div class="print-meta">',
-      '    <div><span>Pangalan</span><strong>' + (name ? U.escapeHtml(name) : blankLine()) + '</strong></div>',
-      '    <div><span>Baitang at Seksyon</span><strong>' + (section ? U.escapeHtml(section) : blankLine()) + '</strong></div>',
-      '    <div><span>Petsa</span><strong>' + U.escapeHtml(today) + '</strong></div>',
-      '    <div><span>Guro</span><strong>' + blankLine() + '</strong></div>',
-      '  </div>',
+    document.title = 'Nai-submit · DALUM-AWIT';
 
-      '  <section class="print-section">',
-      '    <h2><span class="print-section-number">1</span> Napiling Isyung Panlipunan</h2>',
-      issue
-        ? '    <p class="print-issue-title">' + U.escapeHtml(issue.letter + '. ' + issue.title) + '</p><p>' + U.escapeHtml(issue.summary) + '</p>'
-        : '    <p class="print-issue-title">Wala pang napiling isyu.</p>',
-      issue ? '    <p class="print-question"><strong>Tanong:</strong> ' + U.escapeHtml(issue.question) + '</p>' : '',
-      '  </section>',
-
-      '  <section class="print-section">',
-      '    <h2><span class="print-section-number">2</span> Aking Pananaw</h2>',
-      '    <p class="print-decision">Aking sagot: <strong>' + decision + '</strong></p>',
-      '    <p class="print-label">Paliwanag</p>',
-      reflection
-        ? '    <p class="print-reflection">' + U.escapeHtml(reflection).replace(/\n/g, '<br>') + '</p>'
-        : '    <div class="print-blank-lines">' + blankLine() + blankLine() + blankLine() + '</div>',
-      '  </section>',
-
-      '  <section class="print-section">',
-      '    <h2><span class="print-section-number">3</span> Ang Aking Natutuhan</h2>',
-      insight
-        ? '    <p class="print-reflection">' + U.escapeHtml(insight).replace(/\n/g, '<br>') + '</p>'
-        : '    <div class="print-blank-lines">' + blankLine() + blankLine() + blankLine() + blankLine() + '</div>',
-      '  </section>',
-
-      '  <section class="print-section">',
-      '    <h2><span class="print-section-number">4</span> Sintesis ng Paglalakbay</h2>',
-      '    <div class="print-chain">' + chain + '</div>',
-      '    <div class="print-chain-notes">',
-      synthesis.map(function (node) {
-        return '<p><strong>' + U.escapeHtml(node.label) + '.</strong> ' + U.escapeHtml(node.summary) + '</p>';
-      }).join(''),
-      '    </div>',
-      '  </section>',
-
-      '  <section class="print-section print-stations">',
-      '    <h2><span class="print-section-number">5</span> Mga Layunin ng Bawat Istasyon</h2>',
-      '    <ol>' + stationList + '</ol>',
-      '  </section>',
-
-      '  <p class="print-declaration">Ang ulat na ito ay bunga ng aking pakikilahok sa DALUM-AWIT at ng aking pagsusuri sa awiting-bayang “Magtanim ay \'Di Biro.” Pinatutunayan ko na ang mga sagot at paliwanag sa ulat na ito ay aking sariling gawa.</p>',
-
-      '  <div class="print-signatures">',
-      '    <div><span>Lagda ng Mag-aaral</span><strong>' + blankLine() + '</strong></div>',
-      '    <div><span>Lagda ng Guro</span><strong>' + blankLine() + '</strong></div>',
-      '  </div>',
-
-      '  <footer class="print-footer">',
-      '    <span>DALUM-AWIT · Filipino 7</span>',
-      '    <span>Inihanda para sa pagtatasa ng guro</span>',
-      '  </footer>',
-      '</div>'
-    ].join('');
-
-    els.print.setAttribute('aria-hidden', 'false');
+    if (els.thankYou.dataset.visible !== 'true') {
+      els.thankYou.dataset.visible = 'true';
+      window.scrollTo({
+        top: 0,
+        behavior: window.App.prefersReducedMotion() ? 'auto' : 'smooth'
+      });
+      window.setTimeout(function () {
+        els.thankYouTitle.focus({ preventScroll: true });
+      }, 80);
+    }
   }
 
-  function printReport() {
-    buildPrintReport();
-    window.setTimeout(function () {
-      window.print();
-    }, 60);
+  function confirmSubmission() {
+    if (!window.AppState.isSubmissionComplete()) {
+      window.AppState.markSubmissionComplete();
+    }
+    showThankYou();
+  }
+
+  async function submitAnswers() {
+    if (submitting) return;
+    if (window.AppState.isSubmissionComplete()) {
+      showThankYou();
+      return;
+    }
+    if (!window.OnlineStore || typeof window.OnlineStore.submit !== 'function') {
+      window.App.showToast('Hindi pa nakakonekta ang online database. Tingnan ang supabase/SETUP.md.', 6000);
+      return;
+    }
+
+    window.AppState.setStudentField('name', els.name.value);
+    window.AppState.setStudentField('section', els.section.value);
+    window.AppState.setFinalInsight(els.insight.value);
+
+    submitting = true;
+    submissionRequested = true;
+    setSubmitBusy(true);
+
+    try {
+      const confirmed = await window.OnlineStore.submit(story, window.AppState.getState());
+      if (confirmed) {
+        confirmSubmission();
+      } else {
+        setSubmitBusy(false);
+        window.App.showToast('Naka-save sa device ang mga sagot; ipapadala kapag nakakonekta online.', 6000);
+      }
+    } catch (error) {
+      setSubmitBusy(false);
+      window.App.showToast(error.message || 'Hindi naipadala ang mga sagot. Subukan muli.', 6000);
+    } finally {
+      submitting = false;
+    }
+  }
+
+  function onSyncStatus(event) {
+    if (!submissionRequested || window.AppState.isSubmissionComplete()) return;
+    if (event.detail && event.detail.state === 'saved') {
+      confirmSubmission();
+    }
   }
 
   function goEditAnswers() {
@@ -238,7 +219,7 @@
   function onShow() {
     window.QuizManager.paintStation(5);
     syncSummary();
-    buildPrintReport();
+    if (window.AppState.isSubmissionComplete()) showThankYou();
   }
 
   function init(storyData) {
@@ -247,12 +228,12 @@
     issues = story.issues || [];
     synthesis = story.synthesis || [];
 
+    els.station = document.getElementById('station-5');
     els.quote = document.getElementById('station5Quote');
     els.attribution = document.getElementById('station5Attribution');
     els.figure = document.getElementById('station5Figure');
     els.opening = document.getElementById('station5Opening');
     els.diagram = document.getElementById('synthesisDiagram');
-    els.print = document.getElementById('printReport');
 
     els.name = document.getElementById('studentName');
     els.section = document.getElementById('studentSection');
@@ -263,6 +244,14 @@
     els.reflection = document.getElementById('summaryReflection');
     els.insight = document.getElementById('finalInsight');
     els.editBtn = document.getElementById('summaryEditBtn');
+    els.submitBtn = document.getElementById('submitAnswersBtn');
+
+    els.thankYou = document.getElementById('thankYouScreen');
+    els.thankYouTitle = document.getElementById('thankYouTitle');
+    els.thankYouName = document.getElementById('thankYouStudentName');
+    els.thankYouSection = document.getElementById('thankYouSection');
+    els.thankYouDate = document.getElementById('thankYouDate');
+    els.thankYouResetBtn = document.getElementById('thankYouResetBtn');
 
     buildBanner();
     buildSynthesis();
@@ -278,15 +267,16 @@
     });
 
     els.editBtn.addEventListener('click', goEditAnswers);
-    document.getElementById('printReportBtn').addEventListener('click', printReport);
-    document.getElementById('printReportBtn2').addEventListener('click', printReport);
+    els.submitBtn.addEventListener('click', submitAnswers);
     document.getElementById('restartBtn2').addEventListener('click', function () {
       window.App.openResetDialog();
     });
+    els.thankYouResetBtn.addEventListener('click', function () {
+      window.App.openResetDialog();
+    });
 
-    window.addEventListener('beforeprint', buildPrintReport);
+    document.addEventListener('dalum:sync-status', onSyncStatus);
     syncSummary();
-    buildPrintReport();
   }
 
   window.Station5 = {

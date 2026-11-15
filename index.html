@@ -56,11 +56,6 @@
       <circle cx="12" cy="12" r="5" fill="none" stroke="currentColor" stroke-width="1.7"/>
       <circle cx="12" cy="12" r="1.3" fill="currentColor"/>
     </symbol>
-    <symbol id="i-printer" viewBox="0 0 24 24">
-      <path d="M7 9V4h10v5M7 17H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-      <rect x="7" y="14" width="10" height="7" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.8"/>
-      <path d="M17 12h.01" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
-    </symbol>
     <symbol id="i-seed" viewBox="0 0 24 24">
       <path d="M12 21v-8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
       <path d="M12 13C8 13 5 10 5 6c4 0 7 3 7 7Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
@@ -370,7 +365,7 @@
               <p class="section-kicker">Para sa Iyong Guro</p>
               <h2 id="reportTitle">Ulat ng Mag-aaral</h2>
             </div>
-            <p>Ito ang iyong ulat. Maaari mo itong i-print o i-save bilang PDF para sa iyong guro.</p>
+            <p>Ito ang iyong ulat. Kapag handa ka na, pindutin ang Submit upang maipadala ang iyong mga sagot sa online na database para sa iyong guro.</p>
           </div>
 
           <article class="summary-card">
@@ -380,10 +375,6 @@
                 <h2>Ulat ng Mag-aaral</h2>
                 <p>Ang Paglalakbay ni Mutya: Sa Bukid ng mga Kuwento</p>
               </div>
-              <button class="btn btn-gold" type="button" id="printReportBtn">
-                <svg class="icon" aria-hidden="true"><use href="#i-printer"></use></svg>
-                I-print / I-save
-              </button>
             </header>
 
             <div class="summary-body">
@@ -442,11 +433,50 @@
               </div>
 
               <div class="summary-actions">
-                <button class="btn btn-primary" type="button" id="printReportBtn2">
-                  <svg class="icon" aria-hidden="true"><use href="#i-printer"></use></svg>
-                  I-print / I-save bilang PDF
+                <button class="btn btn-primary" type="button" id="submitAnswersBtn">
+                  <svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg>
+                  Submit
                 </button>
                 <button class="btn btn-ghost" type="button" id="restartBtn2">
+                  <svg class="icon" aria-hidden="true"><use href="#i-reset"></use></svg>
+                  Bagong mag-aaral
+                </button>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <section class="thank-you-screen" id="thankYouScreen" hidden aria-labelledby="thankYouTitle">
+          <article class="summary-card thank-you-card">
+            <header class="summary-head">
+              <div>
+                <p class="summary-kicker">DALUM-AWIT · Filipino 7</p>
+                <h2 id="thankYouTitle" tabindex="-1">Maraming salamat!</h2>
+                <p>Nai-submit at naitala na ang iyong mga sagot.</p>
+              </div>
+            </header>
+            <div class="summary-body thank-you-body">
+              <span class="thank-you-mark" aria-hidden="true">
+                <svg class="icon"><use href="#i-check"></use></svg>
+              </span>
+              <p class="thank-you-lede">Natanggap na ang iyong ulat, <strong id="thankYouStudentName">mag-aaral</strong>.</p>
+              <p class="thank-you-copy">Nai-save na ang lahat ng sagot mula sa Station 1 hanggang Station 5 sa online na database. Makikita na ito ng iyong guro sa admin dashboard.</p>
+              <dl class="thank-you-meta">
+                <div>
+                  <dt>Petsa</dt>
+                  <dd id="thankYouDate"></dd>
+                </div>
+                <div>
+                  <dt>Baitang at Seksyon</dt>
+                  <dd id="thankYouSection">—</dd>
+                </div>
+                <div>
+                  <dt>Katayuan</dt>
+                  <dd><span class="answer-badge is-yes">Nai-submit</span></dd>
+                </div>
+              </dl>
+              <div class="thank-you-actions">
+                <button class="btn btn-ghost" type="button" id="thankYouResetBtn">
                   <svg class="icon" aria-hidden="true"><use href="#i-reset"></use></svg>
                   Bagong mag-aaral
                 </button>
@@ -484,7 +514,7 @@
         <li><strong>Sunod-sunod ang mga istasyon.</strong> Tapusin ang bawat gawain upang mabuksan ang susunod.</li>
         <li><strong>Buksan ang bawat card sa Station 2.</strong> Pindutin ang mga linyang mula sa awit upang makita ang pagsusuri.</li>
         <li><strong>Pumili at magpaliwanag sa Station 4.</strong> Kailangan ang isyung pinili, sagot na OO o HINDI, at paliwanag na may 40 karakter o higit pa.</li>
-        <li><strong>I-print ang ulat sa Station 5.</strong> Maaari mong i-save bilang PDF sa print dialog ng browser.</li>
+        <li><strong>I-submit ang ulat sa Station 5.</strong> Pindutin ang Submit upang maipadala ang iyong mga sagot sa online na database para sa iyong guro.</li>
       </ol>
       <div class="dialog-note">
         <strong>Paalala sa guro:</strong> Kusang nai-save ang progreso sa browser na ito. Gamitin ang reset button sa itaas upang magsimula ng bagong mag-aaral.
@@ -508,8 +538,6 @@
       </div>
     </div>
   </dialog>
-
-  <section class="print-report" id="printReport" aria-hidden="true"></section>
 
   <script src="data/storyData.js"></script>
   <script src="assets/js/state.js"></script>

@@ -3409,10 +3409,91 @@ textarea:focus {
 }
 
 /* ------------------------------------------------------------
-   12. Print report (hidden on screen)
+   12. Thank-you screen
    ------------------------------------------------------------ */
-.print-report {
-  display: none;
+.thank-you-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+}
+
+.thank-you-card {
+  width: min(760px, 100%);
+}
+
+.thank-you-body {
+  padding-top: 34px;
+  padding-bottom: 34px;
+  text-align: center;
+}
+
+.thank-you-mark {
+  display: grid;
+  place-items: center;
+  width: 66px;
+  height: 66px;
+  margin: 0 auto 18px;
+  border: 1px solid rgba(184, 132, 42, 0.42);
+  border-radius: 50%;
+  background: var(--gold-100);
+  color: var(--gold-700);
+}
+
+.thank-you-mark .icon {
+  width: 30px;
+  height: 30px;
+}
+
+.thank-you-lede {
+  color: var(--green-900);
+  font-family: var(--font-display);
+  font-size: clamp(1.35rem, 2.5vw, 1.75rem);
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.thank-you-copy {
+  max-width: 56ch;
+  margin: 10px auto 0;
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+  line-height: 1.75;
+}
+
+.thank-you-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 14px;
+  margin: 26px 0 0;
+  padding: 20px 0 0;
+  border-top: 1px dashed var(--line);
+  text-align: left;
+}
+
+.thank-you-meta dt {
+  margin-bottom: 3px;
+  color: var(--gold-700);
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.thank-you-meta dd {
+  margin: 0;
+  color: var(--ink);
+  font-size: 0.88rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.thank-you-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 11px;
+  margin-top: 26px;
 }
 
 /* ------------------------------------------------------------
@@ -4303,341 +4384,5 @@ textarea:focus {
 
   .scene-cloud {
     animation: none;
-  }
-}
-
-/* ------------------------------------------------------------
-   16. Printable student report
-   ------------------------------------------------------------ */
-@media print {
-  @page {
-    size: A4;
-    margin: 15mm 16mm;
-  }
-
-  body {
-    background: #fff !important;
-    color: #16241c;
-    font-size: 10pt;
-  }
-
-  body > .site-header,
-  body > .site-footer,
-  body > .app-main,
-  body > .landing-screen,
-  body > .slides-screen,
-  body > audio,
-  body > .toast,
-  body > .paper-noise,
-  body > .skip-link,
-  body > .svg-sprite,
-  body > dialog {
-    display: none !important;
-  }
-
-  .print-report {
-    display: block !important;
-    position: static;
-    width: 100%;
-  }
-
-  .print-sheet {
-    width: 100%;
-    max-width: 185mm;
-    margin: 0 auto;
-    color: #16241c;
-    font-family: var(--font-body);
-    font-size: 9.8pt;
-    line-height: 1.5;
-  }
-
-  .print-head {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 14mm;
-    padding-bottom: 5mm;
-    margin-bottom: 5mm;
-    border-bottom: 2.5px solid var(--green-900);
-  }
-
-  .print-brand {
-    display: flex;
-    align-items: center;
-    gap: 4mm;
-  }
-
-  .print-brand-mark {
-    display: grid;
-    place-items: center;
-    width: 14mm;
-    height: 14mm;
-    flex: none;
-    border-radius: 50%;
-    background: var(--green-900);
-    color: var(--gold-400);
-  }
-
-  .print-brand-mark .icon {
-    width: 8mm;
-    height: 8mm;
-  }
-
-  .print-kicker {
-    color: var(--gold-700);
-    font-size: 7.2pt;
-    font-weight: 800;
-    letter-spacing: 0.13em;
-    text-transform: uppercase;
-  }
-
-  .print-head h1 {
-    margin: 1mm 0;
-    color: var(--green-900);
-    font-family: var(--font-display);
-    font-size: 23pt;
-    font-weight: 700;
-    line-height: 1;
-    letter-spacing: 0.1em;
-  }
-
-  .print-subtitle {
-    color: #5b6b60;
-    font-size: 8.4pt;
-    line-height: 1.35;
-  }
-
-  .print-doc-type {
-    flex: none;
-    padding: 2.5mm 4mm;
-    border: 1px solid var(--green-900);
-    color: var(--green-900);
-    font-size: 7.5pt;
-    font-weight: 800;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-  }
-
-  .print-meta {
-    display: grid;
-    grid-template-columns: 1.4fr 1.2fr 0.9fr 0.9fr;
-    gap: 3mm 6mm;
-    padding: 4mm 5mm;
-    margin-bottom: 6mm;
-    border: 1px solid #d9d3c3;
-    background: #faf7ef;
-  }
-
-  .print-meta div {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5mm;
-    min-width: 0;
-  }
-
-  .print-meta span {
-    color: #6b766d;
-    font-size: 6.7pt;
-    font-weight: 800;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
-
-  .print-meta strong {
-    min-height: 4.5mm;
-    color: #16241c;
-    font-size: 9pt;
-    line-height: 1.35;
-  }
-
-  .print-section {
-    margin-bottom: 5.5mm;
-    page-break-inside: avoid;
-  }
-
-  .print-section h2 {
-    display: flex;
-    align-items: center;
-    gap: 2.5mm;
-    padding-bottom: 1.6mm;
-    margin-bottom: 2.6mm;
-    border-bottom: 1px solid #d8d2c2;
-    color: var(--green-900);
-    font-family: var(--font-display);
-    font-size: 11.5pt;
-    line-height: 1.2;
-    letter-spacing: 0;
-  }
-
-  .print-section-number {
-    display: grid;
-    place-items: center;
-    width: 5.5mm;
-    height: 5.5mm;
-    flex: none;
-    border-radius: 50%;
-    background: var(--green-900);
-    color: #fff;
-    font-family: var(--font-body);
-    font-size: 7pt;
-    font-weight: 800;
-  }
-
-  .print-issue-title {
-    margin-bottom: 1.5mm;
-    color: #16241c;
-    font-size: 10pt;
-    font-weight: 800;
-  }
-
-  .print-question {
-    padding: 2mm 3mm;
-    margin-top: 2mm;
-    border-left: 2.5px solid var(--gold-600);
-    background: #f7f2e4;
-    font-size: 8.8pt;
-    line-height: 1.45;
-  }
-
-  .print-decision {
-    margin-bottom: 2.5mm;
-    font-size: 9.4pt;
-  }
-
-  .print-decision strong {
-    color: var(--green-900);
-    font-size: 10.5pt;
-    letter-spacing: 0.04em;
-  }
-
-  .print-label {
-    margin-bottom: 1mm;
-    color: #6b766d;
-    font-size: 6.8pt;
-    font-weight: 800;
-    letter-spacing: 0.09em;
-    text-transform: uppercase;
-  }
-
-  .print-reflection {
-    font-size: 9.4pt;
-    line-height: 1.6;
-    white-space: pre-wrap;
-  }
-
-  .print-blank-lines {
-    display: grid;
-    gap: 5mm;
-    margin-top: 3mm;
-  }
-
-  .print-blank-line {
-    display: block;
-    width: 100%;
-    height: 0;
-    border-bottom: 1px solid #a6aea6;
-  }
-
-  .print-chain {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 2mm;
-    padding: 2.6mm 3mm;
-    margin-bottom: 2.6mm;
-    border: 1px solid #dbe5d8;
-    background: #f3f7f1;
-    color: var(--green-900);
-    font-size: 8pt;
-    font-weight: 800;
-    line-height: 1.4;
-  }
-
-  .print-chain-arrow {
-    color: var(--gold-700);
-    font-weight: 800;
-  }
-
-  .print-chain-notes {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5mm 6mm;
-  }
-
-  .print-chain-notes p {
-    color: #4f5e53;
-    font-size: 8.2pt;
-    line-height: 1.45;
-  }
-
-  .print-chain-notes strong {
-    color: #16241c;
-  }
-
-  .print-stations ol {
-    padding-left: 5mm;
-  }
-
-  .print-stations li {
-    margin-bottom: 1.2mm;
-    color: #4f5e53;
-    font-size: 8.2pt;
-    line-height: 1.45;
-  }
-
-  .print-stations strong {
-    color: #16241c;
-  }
-
-  .print-declaration {
-    padding-top: 3mm;
-    margin-top: 4mm;
-    border-top: 1px dashed #c8cfc7;
-    color: #4f5e53;
-    font-size: 8.4pt;
-    line-height: 1.6;
-  }
-
-  .print-signatures {
-    display: flex;
-    justify-content: space-between;
-    gap: 16mm;
-    margin-top: 9mm;
-    page-break-inside: avoid;
-  }
-
-  .print-signatures div {
-    width: 44%;
-  }
-
-  .print-signatures span {
-    display: block;
-    margin-bottom: 8mm;
-    color: #6b766d;
-    font-size: 7pt;
-    font-weight: 800;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
-
-  .print-signatures strong {
-    display: block;
-    height: 4mm;
-    border-bottom: 1px solid #333;
-  }
-
-  .print-footer {
-    display: flex;
-    justify-content: space-between;
-    gap: 10mm;
-    padding-top: 2.5mm;
-    margin-top: 8mm;
-    border-top: 1px solid #ddd;
-    color: #7a847c;
-    font-size: 6.8pt;
-  }
-
-  .print-report a {
-    text-decoration: none;
   }
 }

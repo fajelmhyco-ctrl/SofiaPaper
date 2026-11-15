@@ -105,6 +105,7 @@
         section: ''
       },
       finalInsight: '',
+      finalSubmissionAt: null,
       startedAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
@@ -167,6 +168,7 @@
     state.pictureSlides.complete = Boolean(state.pictureSlides.complete);
     if (!isPlainObject(state.assessment)) state.assessment = { answers: {}, submittedAt: null };
     if (!isPlainObject(state.assessment.answers)) state.assessment.answers = {};
+    state.finalSubmissionAt = state.finalSubmissionAt ? String(state.finalSubmissionAt) : null;
 
     return state;
   }
@@ -297,6 +299,18 @@
     markAssessmentSubmitted() {
       if (state.assessment.submittedAt) return false;
       state.assessment.submittedAt = new Date().toISOString();
+      persist();
+      emit();
+      return true;
+    },
+
+    isSubmissionComplete() {
+      return Boolean(state.finalSubmissionAt);
+    },
+
+    markSubmissionComplete() {
+      if (state.finalSubmissionAt) return false;
+      state.finalSubmissionAt = new Date().toISOString();
       persist();
       emit();
       return true;
